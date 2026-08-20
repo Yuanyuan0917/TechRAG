@@ -50,3 +50,16 @@ Each decision should eventually answer:
 - **Reason:** A cross-encoder jointly scores each query and passage and may improve early ranking precision without changing candidate generation.
 - **Trade-off:** It adds model compute and query latency, and cannot recover relevant chunks missing from the Hybrid candidates.
 - **Experimental constraint:** One predefined model and candidate depth were evaluated without tuning.
+
+## Generation strategy
+
+- **Retrieval:** Hybrid + Cross-Encoder reranking supplies the top five context chunks.
+- **Prompting:** Low-temperature generation is instructed to answer only from supplied context, cite exact labels, and decline unsupported questions.
+- **Scope:** One stateless answer is generated per request; no conversation memory or agent loop is used.
+
+## Citation strategy
+
+- Citation labels such as `[C1]` are assigned to retrieved chunks before generation.
+- Generated labels are parsed and validated against the supplied context after generation.
+- Structured citation provenance comes from retrieved chunk metadata, never from filenames or mappings invented by the LLM.
+- Unknown labels are reported as invalid and are never mapped to a chunk.
