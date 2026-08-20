@@ -1,4 +1,4 @@
-"""Run the frozen TechRAG dense retrieval evaluation."""
+"""Run frozen TechRAG retrieval evaluations."""
 
 from __future__ import annotations
 
@@ -17,8 +17,15 @@ from app.evaluation.metrics import ndcg_at_k, recall_at_k, reciprocal_rank
 from app.ingestion.chunker import chunk_document
 from app.ingestion.models import Chunk, Document
 from app.ingestion.parser import parse_document
+from app.retrieval.bm25 import BM25Retriever, TOKENIZER_DESCRIPTION
 from app.retrieval.dense import DenseRetriever
 from app.retrieval.embedder import SentenceTransformerEmbedder
+from app.retrieval.hybrid import (
+    BM25_CANDIDATE_DEPTH,
+    DENSE_CANDIDATE_DEPTH,
+    RRF_K,
+    HybridRetriever,
+)
 from app.retrieval.vector_store import QdrantVectorStore
 
 CHUNK_SIZE = 1000
@@ -163,13 +170,16 @@ def _aggregate(query_results: list[dict[str, Any]]) -> dict[str, float]:
     }
 
 
-def evaluate_dense(
+def evaluate_retrieval(
+    strategy: str,
     dataset_path: Path = PROJECT_ROOT / "evaluation" / "dataset.json",
-    output_path: Path = PROJECT_ROOT / "evaluation" / "results" / "dense.json",
+    output_path: Path | None = None,
     corpus_path: Path = PROJECT_ROOT / "data" / "raw",
     retrieval_depth: int = RETRIEVAL_DEPTH,
 ) -> dict[str, Any]:
-    """Validate ground truth, run dense retrieval, and save measured results."""
+    """Validate ground truth, evaluate one strategy, and save results."""
+    if strategy not in {"dense", "hybrid"}:
+        raise ValueError(f"Unsupported retrieval strategy: {strategy}")
     if retrieval_depth < 10:
         raise ValueError("retrieval_depth must be at least 10")
 
@@ -188,7 +198,16 @@ def evaluate_dense(
                 f"Qdrant has {indexed_points} points but frozen corpus has {len(chunks)} chunks"
             )
 
-        retriever = DenseRetriever(embedder, vector_store)
+        dense_retriever = DenseRetriever(embedder, vector_store)
+        if strategy == "hybrid":
+            bm25_retriever = BM25Retriever(list(chunks.values()))
+            expected_chunk_ids = frozenset(chunks)
+            if bm25_retriever.chunk_ids != expected_chunk_ids:
+                raise ValueError("BM25 chunk IDs do not match the frozen corpus")
+            retriever = HybridRetriever(dense_retriever, bm25_retriever)
+        else:
+            retriever = dense_retriever
+
         query_results: list[dict[str, Any]] = []
         for item in dataset:
             retrieved = retriever.retrieve(
@@ -244,9 +263,29 @@ def evaluate_dense(
     for difficulty, metrics in by_type.items():
         metrics["questions"] = type_counts[difficulty]
 
-    results: dict[str, Any] = {
-        "strategy": "dense",
-        "configuration": {
+    configuration: dict[str, Any]
+    if strategy == "hybrid":
+        configuration = {
+            "dense_embedding_model": EMBEDDING_MODEL_NAME,
+            "dense_similarity": "cosine",
+            "dense_candidate_depth": DENSE_CANDIDATE_DEPTH,
+            "bm25_candidate_depth": BM25_CANDIDATE_DEPTH,
+            "bm25_tokenizer": TOKENIZER_DESCRIPTION,
+            "fusion": "rrf",
+            "rrf_k": RRF_K,
+            "chunk_size": CHUNK_SIZE,
+            "chunk_overlap": CHUNK_OVERLAP,
+            "qdrant_mode": "local_persistent",
+            "qdrant_path": str(QDRANT_PATH.relative_to(PROJECT_ROOT)),
+            "collection": QDRANT_COLLECTION_NAME,
+            "retrieval_depth": retrieval_depth,
+            "corpus_documents": len(documents),
+            "corpus_chunks": len(chunks),
+            "bm25_chunks": len(bm25_retriever.chunk_ids),
+            "evaluation_questions": len(dataset),
+        }
+    else:
+        configuration = {
             "embedding_model": EMBEDDING_MODEL_NAME,
             "chunk_size": CHUNK_SIZE,
             "chunk_overlap": CHUNK_OVERLAP,
@@ -258,15 +297,53 @@ def evaluate_dense(
             "corpus_documents": len(documents),
             "corpus_chunks": len(chunks),
             "evaluation_questions": len(dataset),
-        },
+        }
+
+    results: dict[str, Any] = {
+        "strategy": strategy,
+        "configuration": configuration,
         "aggregate_metrics": _aggregate(query_results),
         "metrics_by_question_type": by_type,
         "queries": query_results,
     }
 
+    if output_path is None:
+        output_path = PROJECT_ROOT / "evaluation" / "results" / f"{strategy}.json"
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w", encoding="utf-8") as output_file:
         json.dump(results, output_file, indent=2)
         output_file.write("\n")
     return results
+
+
+def evaluate_dense(
+    dataset_path: Path = PROJECT_ROOT / "evaluation" / "dataset.json",
+    output_path: Path = PROJECT_ROOT / "evaluation" / "results" / "dense.json",
+    corpus_path: Path = PROJECT_ROOT / "data" / "raw",
+    retrieval_depth: int = RETRIEVAL_DEPTH,
+) -> dict[str, Any]:
+    """Run the frozen dense evaluation."""
+    return evaluate_retrieval(
+        "dense",
+        dataset_path=dataset_path,
+        output_path=output_path,
+        corpus_path=corpus_path,
+        retrieval_depth=retrieval_depth,
+    )
+
+
+def evaluate_hybrid(
+    dataset_path: Path = PROJECT_ROOT / "evaluation" / "dataset.json",
+    output_path: Path = PROJECT_ROOT / "evaluation" / "results" / "hybrid.json",
+    corpus_path: Path = PROJECT_ROOT / "data" / "raw",
+    retrieval_depth: int = RETRIEVAL_DEPTH,
+) -> dict[str, Any]:
+    """Run dense plus BM25 retrieval fused with RRF."""
+    return evaluate_retrieval(
+        "hybrid",
+        dataset_path=dataset_path,
+        output_path=output_path,
+        corpus_path=corpus_path,
+        retrieval_depth=retrieval_depth,
+    )

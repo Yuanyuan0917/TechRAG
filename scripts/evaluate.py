@@ -1,4 +1,4 @@
-"""Run the frozen TechRAG dense retrieval evaluation."""
+"""Run a frozen TechRAG retrieval evaluation."""
 
 from __future__ import annotations
 
@@ -10,15 +10,19 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from app.evaluation.runner import evaluate_dense
+from app.evaluation.runner import evaluate_retrieval
 
 
 def _argument_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Evaluate dense retrieval.")
+    parser = argparse.ArgumentParser(description="Evaluate retrieval strategies.")
+    parser.add_argument(
+        "--strategy",
+        choices=("dense", "hybrid"),
+        default="dense",
+    )
     parser.add_argument(
         "--output",
         type=Path,
-        default=PROJECT_ROOT / "evaluation" / "results" / "dense.json",
     )
     return parser
 
@@ -26,7 +30,10 @@ def _argument_parser() -> argparse.ArgumentParser:
 def main() -> int:
     """Run evaluation and print aggregate metrics."""
     args = _argument_parser().parse_args()
-    results = evaluate_dense(output_path=args.output)
+    output_path = args.output or (
+        PROJECT_ROOT / "evaluation" / "results" / f"{args.strategy}.json"
+    )
+    results = evaluate_retrieval(args.strategy, output_path=output_path)
     metrics = results["aggregate_metrics"]
 
     print(f"Strategy: {results['strategy']}")
@@ -38,7 +45,7 @@ def main() -> int:
     print(f"MRR: {metrics['mrr']:.6f}")
     print(f"nDCG@5: {metrics['ndcg_at_5']:.6f}")
     print()
-    print(f"Saved: {args.output}")
+    print(f"Saved: {output_path}")
     return 0
 
 

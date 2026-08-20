@@ -1,4 +1,4 @@
-"""Query the local TechRAG dense retrieval index."""
+"""Query the local TechRAG dense or hybrid retrieval index."""
 
 from __future__ import annotations
 
@@ -10,8 +10,11 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from app.evaluation.runner import build_corpus_inventory
+from app.retrieval.bm25 import BM25Retriever
 from app.retrieval.dense import DenseRetriever
 from app.retrieval.embedder import SentenceTransformerEmbedder
+from app.retrieval.hybrid import HybridRetriever
 from app.retrieval.vector_store import QdrantVectorStore
 
 
@@ -23,9 +26,14 @@ def _preview(text: str, limit: int = 240) -> str:
 
 
 def _argument_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Search the local dense chunk index.")
+    parser = argparse.ArgumentParser(description="Search the local chunk index.")
     parser.add_argument("query", help="Question or search text")
     parser.add_argument("--top-k", type=int, default=5)
+    parser.add_argument(
+        "--strategy",
+        choices=("dense", "hybrid"),
+        default="dense",
+    )
     return parser
 
 
@@ -40,10 +48,19 @@ def main() -> int:
             argument_parser.error("Dense index not found; run scripts/ingest.py --index first")
 
         embedder = SentenceTransformerEmbedder()
-        retriever = DenseRetriever(embedder, vector_store)
+        dense_retriever = DenseRetriever(embedder, vector_store)
+        if args.strategy == "hybrid":
+            _, chunks = build_corpus_inventory(PROJECT_ROOT / "data" / "raw")
+            bm25_retriever = BM25Retriever(list(chunks.values()))
+            if bm25_retriever.chunk_ids != frozenset(chunks):
+                raise ValueError("BM25 chunk IDs do not match the frozen corpus")
+            retriever = HybridRetriever(dense_retriever, bm25_retriever)
+        else:
+            retriever = dense_retriever
         results = retriever.retrieve(args.query, top_k=args.top_k)
         for rank, result in enumerate(results, start=1):
-            print(f"{rank}. score={result.score:.4f}")
+            score_label = "rrf_score" if args.strategy == "hybrid" else "score"
+            print(f"{rank}. {score_label}={result.score:.4f}")
             print(f"   source={Path(result.chunk.source).name}")
             print(f"   chunk_id={result.chunk.id}")
             print(f"   text={_preview(result.chunk.text)}")

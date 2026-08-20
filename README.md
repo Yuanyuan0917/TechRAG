@@ -4,13 +4,13 @@ An evaluated RAG system for technical documentation.
 
 **Status:** Early development
 
-The current baseline supports:
+The current project supports:
 
 ```text
-Markdown / text-based PDF → deterministic chunking → local embeddings → Qdrant indexing → dense retrieval
+Markdown / text-based PDF → deterministic chunking → local embeddings → Qdrant indexing → retrieval evaluation
 ```
 
-LLM answer generation, hybrid retrieval, and evaluation are not implemented yet.
+It experimentally compares Dense Retrieval with Dense + BM25 + Reciprocal Rank Fusion. LLM answer generation and reranking are not implemented yet; no strategy is assumed superior without measured evaluation results.
 
 The intended pipeline is:
 
@@ -18,4 +18,4 @@ The intended pipeline is:
 documents → parsing → chunking → indexing → retrieval → generation → citations
 ```
 
-Later evaluation will compare dense retrieval, hybrid retrieval, and hybrid retrieval with reranking. These components are not yet implemented.
+Later work may compare the measured retrieval baselines with reranking.

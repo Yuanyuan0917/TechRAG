@@ -29,3 +29,17 @@ Each decision should eventually answer:
 - **Reason:** It is a production-relevant vector database while remaining easy to run locally.
 - **Point IDs:** Deterministic UUIDv5 values derived from stable chunk IDs; the original chunk ID remains in the payload.
 - **Deferred:** Remote or containerized deployment.
+
+## BM25
+
+- **Choice:** In-process `rank-bm25` over the exact frozen `Chunk` objects.
+- **Reason:** Lexical retrieval can complement semantic retrieval in a controlled experiment, especially for exact technical terms and API names.
+- **Tokenizer:** Unicode case-folding followed by the standard-library regex `[a-z0-9_]+`; underscores in identifiers such as `score_threshold` are retained.
+- **Trade-off:** No stemming, lemmatization, synonym expansion, or advanced preprocessing is used, so lexical variants may not match.
+
+## Reciprocal Rank Fusion
+
+- **Choice:** Fuse dense top-20 and BM25 top-20 rankings with standard Reciprocal Rank Fusion and fixed `k=60`.
+- **Reason:** Dense cosine scores and BM25 scores are not directly comparable; rank-based fusion avoids score calibration.
+- **Tie-breaking:** Equal fused scores are ordered by deterministic chunk ID.
+- **Experimental constraint:** The fusion constant, candidate depths, and tokenization were fixed before evaluation and were not tuned.

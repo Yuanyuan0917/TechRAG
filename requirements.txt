@@ -3,3 +3,4 @@ qdrant-client
 pymupdf
 python-dotenv
 pytest
+rank-bm25
