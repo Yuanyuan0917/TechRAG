@@ -5,3 +5,8 @@ python-dotenv
 pytest
 rank-bm25
 mlx-lm
+fastapi
+uvicorn
+streamlit
+requests
+httpx
