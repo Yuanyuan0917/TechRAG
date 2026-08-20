@@ -4,6 +4,8 @@ An evaluated RAG system for technical documentation.
 
 **Status:** Early development
 
+Ingestion currently supports Markdown, text-based PDFs, and fixed-size character chunking with overlap.
+
 The intended pipeline is:
 
 ```text
