@@ -1,0 +1,1 @@
+"""TechRAG application package."""
