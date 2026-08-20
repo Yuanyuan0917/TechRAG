@@ -1,4 +1,4 @@
-"""Query the local TechRAG dense or hybrid retrieval index."""
+"""Query the local TechRAG dense, hybrid, or reranked retrieval index."""
 
 from __future__ import annotations
 
@@ -15,6 +15,7 @@ from app.retrieval.bm25 import BM25Retriever
 from app.retrieval.dense import DenseRetriever
 from app.retrieval.embedder import SentenceTransformerEmbedder
 from app.retrieval.hybrid import HybridRetriever
+from app.retrieval.reranker import CrossEncoderReranker, RerankedRetriever
 from app.retrieval.vector_store import QdrantVectorStore
 
 
@@ -31,7 +32,7 @@ def _argument_parser() -> argparse.ArgumentParser:
     parser.add_argument("--top-k", type=int, default=5)
     parser.add_argument(
         "--strategy",
-        choices=("dense", "hybrid"),
+        choices=("dense", "hybrid", "reranked"),
         default="dense",
     )
     return parser
@@ -49,18 +50,30 @@ def main() -> int:
 
         embedder = SentenceTransformerEmbedder()
         dense_retriever = DenseRetriever(embedder, vector_store)
-        if args.strategy == "hybrid":
+        if args.strategy in {"hybrid", "reranked"}:
             _, chunks = build_corpus_inventory(PROJECT_ROOT / "data" / "raw")
             bm25_retriever = BM25Retriever(list(chunks.values()))
             if bm25_retriever.chunk_ids != frozenset(chunks):
                 raise ValueError("BM25 chunk IDs do not match the frozen corpus")
-            retriever = HybridRetriever(dense_retriever, bm25_retriever)
+            hybrid_retriever = HybridRetriever(dense_retriever, bm25_retriever)
+            if args.strategy == "reranked":
+                retriever = RerankedRetriever(
+                    hybrid_retriever,
+                    CrossEncoderReranker(),
+                )
+            else:
+                retriever = hybrid_retriever
         else:
             retriever = dense_retriever
         results = retriever.retrieve(args.query, top_k=args.top_k)
         for rank, result in enumerate(results, start=1):
-            score_label = "rrf_score" if args.strategy == "hybrid" else "score"
-            print(f"{rank}. {score_label}={result.score:.4f}")
+            if args.strategy == "reranked":
+                print(f"{rank}. reranker_score={result.reranker_score:.4f}")
+                print(f"   hybrid_rank={result.hybrid_rank}")
+                print(f"   hybrid_rrf_score={result.hybrid_rrf_score:.4f}")
+            else:
+                score_label = "rrf_score" if args.strategy == "hybrid" else "score"
+                print(f"{rank}. {score_label}={result.score:.4f}")
             print(f"   source={Path(result.chunk.source).name}")
             print(f"   chunk_id={result.chunk.id}")
             print(f"   text={_preview(result.chunk.text)}")

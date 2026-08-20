@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import statistics
+import time
 from collections import Counter
 from pathlib import Path
 from typing import Any
@@ -12,6 +14,7 @@ from app.config import (
     PROJECT_ROOT,
     QDRANT_COLLECTION_NAME,
     QDRANT_PATH,
+    RERANKER_MODEL_NAME,
 )
 from app.evaluation.metrics import ndcg_at_k, recall_at_k, reciprocal_rank
 from app.ingestion.chunker import chunk_document
@@ -25,6 +28,11 @@ from app.retrieval.hybrid import (
     DENSE_CANDIDATE_DEPTH,
     RRF_K,
     HybridRetriever,
+)
+from app.retrieval.reranker import (
+    RERANKER_CANDIDATE_DEPTH,
+    CrossEncoderReranker,
+    RerankedRetriever,
 )
 from app.retrieval.vector_store import QdrantVectorStore
 
@@ -170,6 +178,25 @@ def _aggregate(query_results: list[dict[str, Any]]) -> dict[str, float]:
     }
 
 
+def _percentile(values: list[float], percentile: float) -> float:
+    """Return a linearly interpolated percentile for non-empty values."""
+    ordered = sorted(values)
+    position = (len(ordered) - 1) * percentile
+    lower = int(position)
+    upper = min(lower + 1, len(ordered) - 1)
+    fraction = position - lower
+    return ordered[lower] + (ordered[upper] - ordered[lower]) * fraction
+
+
+def _latency_summary(values: list[float]) -> dict[str, float]:
+    """Summarize milliseconds across the fixed evaluation query set."""
+    return {
+        "mean": statistics.fmean(values),
+        "median": statistics.median(values),
+        "p95": _percentile(values, 0.95),
+    }
+
+
 def evaluate_retrieval(
     strategy: str,
     dataset_path: Path = PROJECT_ROOT / "evaluation" / "dataset.json",
@@ -178,7 +205,7 @@ def evaluate_retrieval(
     retrieval_depth: int = RETRIEVAL_DEPTH,
 ) -> dict[str, Any]:
     """Validate ground truth, evaluate one strategy, and save results."""
-    if strategy not in {"dense", "hybrid"}:
+    if strategy not in {"dense", "hybrid", "reranked"}:
         raise ValueError(f"Unsupported retrieval strategy: {strategy}")
     if retrieval_depth < 10:
         raise ValueError("retrieval_depth must be at least 10")
@@ -199,53 +226,116 @@ def evaluate_retrieval(
             )
 
         dense_retriever = DenseRetriever(embedder, vector_store)
-        if strategy == "hybrid":
+        if strategy in {"hybrid", "reranked"}:
             bm25_retriever = BM25Retriever(list(chunks.values()))
             expected_chunk_ids = frozenset(chunks)
             if bm25_retriever.chunk_ids != expected_chunk_ids:
                 raise ValueError("BM25 chunk IDs do not match the frozen corpus")
-            retriever = HybridRetriever(dense_retriever, bm25_retriever)
+            hybrid_retriever = HybridRetriever(dense_retriever, bm25_retriever)
+            if strategy == "reranked":
+                reranker = CrossEncoderReranker()
+                reranked_retriever = RerankedRetriever(
+                    hybrid_retriever,
+                    reranker,
+                    candidate_depth=RERANKER_CANDIDATE_DEPTH,
+                )
+                warmup_question = dataset[0]["question"]
+                warmup_candidates = reranked_retriever.retrieve_candidates(
+                    warmup_question
+                )
+                reranker.rerank(
+                    warmup_question,
+                    warmup_candidates,
+                    top_k=retrieval_depth,
+                )
+            else:
+                retriever = hybrid_retriever
         else:
             retriever = dense_retriever
 
         query_results: list[dict[str, Any]] = []
+        hybrid_latencies: list[float] = []
+        reranker_latencies: list[float] = []
+        end_to_end_latencies: list[float] = []
         for item in dataset:
-            retrieved = retriever.retrieve(
-                item["question"],
-                top_k=retrieval_depth,
-            )
+            hybrid_candidates = None
+            query_latency = None
+            if strategy == "reranked":
+                start = time.perf_counter()
+                hybrid_candidates = reranked_retriever.retrieve_candidates(
+                    item["question"]
+                )
+                hybrid_finished = time.perf_counter()
+                retrieved = reranker.rerank(
+                    item["question"],
+                    hybrid_candidates,
+                    top_k=retrieval_depth,
+                )
+                reranker_finished = time.perf_counter()
+                hybrid_ms = (hybrid_finished - start) * 1000
+                reranker_ms = (reranker_finished - hybrid_finished) * 1000
+                end_to_end_ms = (reranker_finished - start) * 1000
+                hybrid_latencies.append(hybrid_ms)
+                reranker_latencies.append(reranker_ms)
+                end_to_end_latencies.append(end_to_end_ms)
+                query_latency = {
+                    "hybrid": hybrid_ms,
+                    "reranker": reranker_ms,
+                    "end_to_end": end_to_end_ms,
+                }
+            else:
+                retrieved = retriever.retrieve(
+                    item["question"],
+                    top_k=retrieval_depth,
+                )
             retrieved_ids = [result.chunk.id for result in retrieved]
             relevant_ids = item["relevant_chunks"]
-            query_results.append(
-                {
-                    "id": item["id"],
-                    "difficulty": item["difficulty"],
-                    "question": item["question"],
-                    "relevant_chunk_ids": relevant_ids,
-                    "retrieved": [
-                        {
-                            "rank": rank,
-                            "chunk_id": result.chunk.id,
-                            "score": result.score,
-                            "source": Path(result.chunk.source).name,
-                        }
-                        for rank, result in enumerate(retrieved, start=1)
-                    ],
-                    "metrics": {
-                        "recall_at_1": recall_at_k(retrieved_ids, relevant_ids, 1),
-                        "recall_at_5": recall_at_k(retrieved_ids, relevant_ids, 5),
-                        "recall_at_10": recall_at_k(retrieved_ids, relevant_ids, 10),
-                        "reciprocal_rank": reciprocal_rank(
-                            retrieved_ids, relevant_ids
-                        ),
-                        "ndcg_at_5": ndcg_at_k(
-                            retrieved_ids,
-                            item["chunk_relevance"],
-                            5,
-                        ),
-                    },
-                }
-            )
+            if strategy == "reranked":
+                serialized_retrieved = [
+                    {
+                        "rank": result.rank,
+                        "chunk_id": result.chunk.id,
+                        "reranker_score": result.reranker_score,
+                        "hybrid_rank": result.hybrid_rank,
+                        "hybrid_rrf_score": result.hybrid_rrf_score,
+                        "source": Path(result.chunk.source).name,
+                    }
+                    for result in retrieved
+                ]
+            else:
+                serialized_retrieved = [
+                    {
+                        "rank": rank,
+                        "chunk_id": result.chunk.id,
+                        "score": result.score,
+                        "source": Path(result.chunk.source).name,
+                    }
+                    for rank, result in enumerate(retrieved, start=1)
+                ]
+            query_result = {
+                "id": item["id"],
+                "difficulty": item["difficulty"],
+                "question": item["question"],
+                "relevant_chunk_ids": relevant_ids,
+                "retrieved": serialized_retrieved,
+                "metrics": {
+                    "recall_at_1": recall_at_k(retrieved_ids, relevant_ids, 1),
+                    "recall_at_5": recall_at_k(retrieved_ids, relevant_ids, 5),
+                    "recall_at_10": recall_at_k(retrieved_ids, relevant_ids, 10),
+                    "reciprocal_rank": reciprocal_rank(retrieved_ids, relevant_ids),
+                    "ndcg_at_5": ndcg_at_k(
+                        retrieved_ids,
+                        item["chunk_relevance"],
+                        5,
+                    ),
+                },
+            }
+            if strategy == "reranked":
+                query_result["hybrid_candidate_chunk_ids"] = [
+                    candidate.chunk.id for candidate in hybrid_candidates
+                ]
+                query_result["latency_ms"] = query_latency
+            query_results.append(query_result)
     finally:
         vector_store.close()
 
@@ -264,7 +354,7 @@ def evaluate_retrieval(
         metrics["questions"] = type_counts[difficulty]
 
     configuration: dict[str, Any]
-    if strategy == "hybrid":
+    if strategy in {"hybrid", "reranked"}:
         configuration = {
             "dense_embedding_model": EMBEDDING_MODEL_NAME,
             "dense_similarity": "cosine",
@@ -284,6 +374,13 @@ def evaluate_retrieval(
             "bm25_chunks": len(bm25_retriever.chunk_ids),
             "evaluation_questions": len(dataset),
         }
+        if strategy == "reranked":
+            configuration.update(
+                {
+                    "reranker_model": RERANKER_MODEL_NAME,
+                    "reranker_candidate_depth": RERANKER_CANDIDATE_DEPTH,
+                }
+            )
     else:
         configuration = {
             "embedding_model": EMBEDDING_MODEL_NAME,
@@ -299,16 +396,26 @@ def evaluate_retrieval(
             "evaluation_questions": len(dataset),
         }
 
+    result_strategy = "hybrid_reranked" if strategy == "reranked" else strategy
     results: dict[str, Any] = {
-        "strategy": strategy,
+        "strategy": result_strategy,
         "configuration": configuration,
         "aggregate_metrics": _aggregate(query_results),
         "metrics_by_question_type": by_type,
         "queries": query_results,
     }
+    if strategy == "reranked":
+        results["latency_ms"] = {
+            "measurement": "local steady-state after one excluded warmup query",
+            "queries": len(dataset),
+            "hybrid": _latency_summary(hybrid_latencies),
+            "reranker": _latency_summary(reranker_latencies),
+            "end_to_end": _latency_summary(end_to_end_latencies),
+        }
 
     if output_path is None:
-        output_path = PROJECT_ROOT / "evaluation" / "results" / f"{strategy}.json"
+        result_name = "hybrid_reranked" if strategy == "reranked" else strategy
+        output_path = PROJECT_ROOT / "evaluation" / "results" / f"{result_name}.json"
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w", encoding="utf-8") as output_file:
@@ -342,6 +449,22 @@ def evaluate_hybrid(
     """Run dense plus BM25 retrieval fused with RRF."""
     return evaluate_retrieval(
         "hybrid",
+        dataset_path=dataset_path,
+        output_path=output_path,
+        corpus_path=corpus_path,
+        retrieval_depth=retrieval_depth,
+    )
+
+
+def evaluate_reranked(
+    dataset_path: Path = PROJECT_ROOT / "evaluation" / "dataset.json",
+    output_path: Path = PROJECT_ROOT / "evaluation" / "results" / "hybrid_reranked.json",
+    corpus_path: Path = PROJECT_ROOT / "data" / "raw",
+    retrieval_depth: int = RETRIEVAL_DEPTH,
+) -> dict[str, Any]:
+    """Run Hybrid top-20 followed by cross-encoder reranking."""
+    return evaluate_retrieval(
+        "reranked",
         dataset_path=dataset_path,
         output_path=output_path,
         corpus_path=corpus_path,

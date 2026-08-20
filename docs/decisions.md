@@ -43,3 +43,10 @@ Each decision should eventually answer:
 - **Reason:** Dense cosine scores and BM25 scores are not directly comparable; rank-based fusion avoids score calibration.
 - **Tie-breaking:** Equal fused scores are ordered by deterministic chunk ID.
 - **Experimental constraint:** The fusion constant, candidate depths, and tokenization were fixed before evaluation and were not tuned.
+
+## Cross-encoder reranking
+
+- **Choice:** `cross-encoder/ms-marco-MiniLM-L-6-v2` reranks only the Hybrid top-20 candidate set and returns the top 10.
+- **Reason:** A cross-encoder jointly scores each query and passage and may improve early ranking precision without changing candidate generation.
+- **Trade-off:** It adds model compute and query latency, and cannot recover relevant chunks missing from the Hybrid candidates.
+- **Experimental constraint:** One predefined model and candidate depth were evaluated without tuning.

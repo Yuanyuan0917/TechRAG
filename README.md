@@ -10,7 +10,7 @@ The current project supports:
 Markdown / text-based PDF → deterministic chunking → local embeddings → Qdrant indexing → retrieval evaluation
 ```
 
-It experimentally compares Dense Retrieval with Dense + BM25 + Reciprocal Rank Fusion. LLM answer generation and reranking are not implemented yet; no strategy is assumed superior without measured evaluation results.
+It experimentally compares Dense Retrieval, Dense + BM25 + Reciprocal Rank Fusion, and Hybrid + Cross-Encoder Reranking. On the frozen 40-question evaluation, reranking increased Hybrid MRR from `0.596667` to `0.815417` and nDCG@5 from `0.476628` to `0.651735`, with additional local CPU latency. LLM answer generation is not implemented yet.
 
 The intended pipeline is:
 
@@ -18,4 +18,4 @@ The intended pipeline is:
 documents → parsing → chunking → indexing → retrieval → generation → citations
 ```
 
-Later work may compare the measured retrieval baselines with reranking.
+Later work may use these measured retrieval strategies as inputs to answer generation and citation experiments.

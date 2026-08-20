@@ -17,7 +17,7 @@ def _argument_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Evaluate retrieval strategies.")
     parser.add_argument(
         "--strategy",
-        choices=("dense", "hybrid"),
+        choices=("dense", "hybrid", "reranked"),
         default="dense",
     )
     parser.add_argument(
@@ -30,8 +30,9 @@ def _argument_parser() -> argparse.ArgumentParser:
 def main() -> int:
     """Run evaluation and print aggregate metrics."""
     args = _argument_parser().parse_args()
+    result_name = "hybrid_reranked" if args.strategy == "reranked" else args.strategy
     output_path = args.output or (
-        PROJECT_ROOT / "evaluation" / "results" / f"{args.strategy}.json"
+        PROJECT_ROOT / "evaluation" / "results" / f"{result_name}.json"
     )
     results = evaluate_retrieval(args.strategy, output_path=output_path)
     metrics = results["aggregate_metrics"]
