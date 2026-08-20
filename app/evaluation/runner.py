@@ -1,0 +1,272 @@
+"""Run the frozen TechRAG dense retrieval evaluation."""
+
+from __future__ import annotations
+
+import json
+from collections import Counter
+from pathlib import Path
+from typing import Any
+
+from app.config import (
+    EMBEDDING_MODEL_NAME,
+    PROJECT_ROOT,
+    QDRANT_COLLECTION_NAME,
+    QDRANT_PATH,
+)
+from app.evaluation.metrics import ndcg_at_k, recall_at_k, reciprocal_rank
+from app.ingestion.chunker import chunk_document
+from app.ingestion.models import Chunk, Document
+from app.ingestion.parser import parse_document
+from app.retrieval.dense import DenseRetriever
+from app.retrieval.embedder import SentenceTransformerEmbedder
+from app.retrieval.vector_store import QdrantVectorStore
+
+CHUNK_SIZE = 1000
+CHUNK_OVERLAP = 200
+RETRIEVAL_DEPTH = 10
+ALLOWED_DIFFICULTIES = {"fact", "multi_chunk", "cross_document"}
+
+
+def load_dataset(path: Path) -> list[dict[str, Any]]:
+    """Load a JSON evaluation dataset and require a list of questions."""
+    with Path(path).open(encoding="utf-8") as dataset_file:
+        dataset = json.load(dataset_file)
+    if not isinstance(dataset, list):
+        raise ValueError("Evaluation dataset must be a JSON list")
+    return dataset
+
+
+def build_corpus_inventory(
+    corpus_path: Path,
+) -> tuple[dict[str, Document], dict[str, Chunk]]:
+    """Parse and chunk the frozen corpus with baseline configuration."""
+    documents: dict[str, Document] = {}
+    chunks: dict[str, Chunk] = {}
+    files = sorted(
+        (
+            path
+            for path in Path(corpus_path).iterdir()
+            if path.is_file() and path.suffix.lower() in {".md", ".pdf"}
+        ),
+        key=lambda path: path.name.casefold(),
+    )
+    for path in files:
+        document = parse_document(path)
+        if document.id in documents:
+            raise ValueError(f"Duplicate document ID in corpus: {document.id}")
+        documents[document.id] = document
+        for chunk in chunk_document(
+            document,
+            chunk_size=CHUNK_SIZE,
+            chunk_overlap=CHUNK_OVERLAP,
+        ):
+            if chunk.id in chunks:
+                raise ValueError(f"Duplicate chunk ID in corpus: {chunk.id}")
+            chunks[chunk.id] = chunk
+    return documents, chunks
+
+
+def validate_dataset(
+    dataset: list[dict[str, Any]],
+    documents: dict[str, Document],
+    chunks: dict[str, Chunk],
+) -> None:
+    """Fail on malformed or stale ground truth."""
+    if not dataset:
+        raise ValueError("Evaluation dataset must contain at least one question")
+
+    question_ids: set[str] = set()
+    normalized_questions: set[str] = set()
+    for position, item in enumerate(dataset, start=1):
+        if not isinstance(item, dict):
+            raise ValueError(f"Question {position} must be an object")
+
+        question_id = item.get("id")
+        question = item.get("question")
+        reference_answer = item.get("reference_answer")
+        relevant_documents = item.get("relevant_documents")
+        relevant_chunks = item.get("relevant_chunks")
+        chunk_relevance = item.get("chunk_relevance")
+        difficulty = item.get("difficulty")
+
+        if not isinstance(question_id, str) or not question_id:
+            raise ValueError(f"Question {position} has an invalid ID")
+        if question_id in question_ids:
+            raise ValueError(f"Duplicate question ID: {question_id}")
+        question_ids.add(question_id)
+
+        if not isinstance(question, str) or not question.strip():
+            raise ValueError(f"{question_id} has an empty question")
+        normalized_question = " ".join(question.casefold().split())
+        if normalized_question in normalized_questions:
+            raise ValueError(f"Duplicate question text: {question}")
+        normalized_questions.add(normalized_question)
+
+        if not isinstance(reference_answer, str) or not reference_answer.strip():
+            raise ValueError(f"{question_id} has an empty reference answer")
+        if difficulty not in ALLOWED_DIFFICULTIES:
+            raise ValueError(f"{question_id} has invalid difficulty: {difficulty}")
+        if not isinstance(relevant_documents, list) or not relevant_documents:
+            raise ValueError(f"{question_id} must have relevant documents")
+        if len(relevant_documents) != len(set(relevant_documents)):
+            raise ValueError(f"{question_id} has duplicate relevant documents")
+        if not isinstance(relevant_chunks, list) or not relevant_chunks:
+            raise ValueError(f"{question_id} must have relevant chunks")
+        if len(relevant_chunks) != len(set(relevant_chunks)):
+            raise ValueError(f"{question_id} has duplicate relevant chunks")
+        if not isinstance(chunk_relevance, dict):
+            raise ValueError(f"{question_id} must have chunk_relevance")
+        if set(chunk_relevance) != set(relevant_chunks):
+            raise ValueError(
+                f"{question_id} chunk_relevance must label every relevant chunk exactly"
+            )
+
+        missing_documents = set(relevant_documents) - set(documents)
+        if missing_documents:
+            raise ValueError(
+                f"{question_id} references missing documents: {sorted(missing_documents)}"
+            )
+        missing_chunks = set(relevant_chunks) - set(chunks)
+        if missing_chunks:
+            raise ValueError(
+                f"{question_id} references missing chunks: {sorted(missing_chunks)}"
+            )
+
+        for chunk_id, grade in chunk_relevance.items():
+            if not isinstance(grade, int) or grade not in {1, 2}:
+                raise ValueError(f"{question_id} has invalid relevance for {chunk_id}")
+            if chunks[chunk_id].document_id not in relevant_documents:
+                raise ValueError(
+                    f"{question_id} labels {chunk_id} outside relevant_documents"
+                )
+
+
+def _mean(values: list[float]) -> float:
+    return sum(values) / len(values) if values else 0.0
+
+
+def _aggregate(query_results: list[dict[str, Any]]) -> dict[str, float]:
+    return {
+        "recall_at_1": _mean(
+            [result["metrics"]["recall_at_1"] for result in query_results]
+        ),
+        "recall_at_5": _mean(
+            [result["metrics"]["recall_at_5"] for result in query_results]
+        ),
+        "recall_at_10": _mean(
+            [result["metrics"]["recall_at_10"] for result in query_results]
+        ),
+        "mrr": _mean([result["metrics"]["reciprocal_rank"] for result in query_results]),
+        "ndcg_at_5": _mean(
+            [result["metrics"]["ndcg_at_5"] for result in query_results]
+        ),
+    }
+
+
+def evaluate_dense(
+    dataset_path: Path = PROJECT_ROOT / "evaluation" / "dataset.json",
+    output_path: Path = PROJECT_ROOT / "evaluation" / "results" / "dense.json",
+    corpus_path: Path = PROJECT_ROOT / "data" / "raw",
+    retrieval_depth: int = RETRIEVAL_DEPTH,
+) -> dict[str, Any]:
+    """Validate ground truth, run dense retrieval, and save measured results."""
+    if retrieval_depth < 10:
+        raise ValueError("retrieval_depth must be at least 10")
+
+    dataset = load_dataset(dataset_path)
+    documents, chunks = build_corpus_inventory(corpus_path)
+    validate_dataset(dataset, documents, chunks)
+
+    embedder = SentenceTransformerEmbedder()
+    vector_store = QdrantVectorStore()
+    try:
+        if not vector_store.collection_exists():
+            raise ValueError("Dense Qdrant collection does not exist; rebuild the index")
+        indexed_points = vector_store.count()
+        if indexed_points != len(chunks):
+            raise ValueError(
+                f"Qdrant has {indexed_points} points but frozen corpus has {len(chunks)} chunks"
+            )
+
+        retriever = DenseRetriever(embedder, vector_store)
+        query_results: list[dict[str, Any]] = []
+        for item in dataset:
+            retrieved = retriever.retrieve(
+                item["question"],
+                top_k=retrieval_depth,
+            )
+            retrieved_ids = [result.chunk.id for result in retrieved]
+            relevant_ids = item["relevant_chunks"]
+            query_results.append(
+                {
+                    "id": item["id"],
+                    "difficulty": item["difficulty"],
+                    "question": item["question"],
+                    "relevant_chunk_ids": relevant_ids,
+                    "retrieved": [
+                        {
+                            "rank": rank,
+                            "chunk_id": result.chunk.id,
+                            "score": result.score,
+                            "source": Path(result.chunk.source).name,
+                        }
+                        for rank, result in enumerate(retrieved, start=1)
+                    ],
+                    "metrics": {
+                        "recall_at_1": recall_at_k(retrieved_ids, relevant_ids, 1),
+                        "recall_at_5": recall_at_k(retrieved_ids, relevant_ids, 5),
+                        "recall_at_10": recall_at_k(retrieved_ids, relevant_ids, 10),
+                        "reciprocal_rank": reciprocal_rank(
+                            retrieved_ids, relevant_ids
+                        ),
+                        "ndcg_at_5": ndcg_at_k(
+                            retrieved_ids,
+                            item["chunk_relevance"],
+                            5,
+                        ),
+                    },
+                }
+            )
+    finally:
+        vector_store.close()
+
+    by_type = {
+        difficulty: _aggregate(
+            [
+                result
+                for result in query_results
+                if result["difficulty"] == difficulty
+            ]
+        )
+        for difficulty in sorted(ALLOWED_DIFFICULTIES)
+    }
+    type_counts = Counter(item["difficulty"] for item in dataset)
+    for difficulty, metrics in by_type.items():
+        metrics["questions"] = type_counts[difficulty]
+
+    results: dict[str, Any] = {
+        "strategy": "dense",
+        "configuration": {
+            "embedding_model": EMBEDDING_MODEL_NAME,
+            "chunk_size": CHUNK_SIZE,
+            "chunk_overlap": CHUNK_OVERLAP,
+            "similarity": "cosine",
+            "qdrant_mode": "local_persistent",
+            "qdrant_path": str(QDRANT_PATH.relative_to(PROJECT_ROOT)),
+            "collection": QDRANT_COLLECTION_NAME,
+            "retrieval_depth": retrieval_depth,
+            "corpus_documents": len(documents),
+            "corpus_chunks": len(chunks),
+            "evaluation_questions": len(dataset),
+        },
+        "aggregate_metrics": _aggregate(query_results),
+        "metrics_by_question_type": by_type,
+        "queries": query_results,
+    }
+
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("w", encoding="utf-8") as output_file:
+        json.dump(results, output_file, indent=2)
+        output_file.write("\n")
+    return results

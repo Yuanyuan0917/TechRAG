@@ -1,0 +1,736 @@
+[
+  {
+    "id": "q001",
+    "question": "What does dependency injection mean in FastAPI?",
+    "reference_answer": "A path operation declares what it needs, and FastAPI provides or injects those dependencies, enabling shared logic, database connections, and security requirements with less repetition.",
+    "relevant_documents": [
+      "doc_97add4ed2c662b4c580315e5bd07e009a5f6858dff61e42e572ebd5832f07d6f"
+    ],
+    "relevant_chunks": [
+      "chunk_650291a57f062c2b9952069182c54be8e1b246992c87b738659aa622aa60bb72"
+    ],
+    "chunk_relevance": {
+      "chunk_650291a57f062c2b9952069182c54be8e1b246992c87b738659aa622aa60bb72": 2
+    },
+    "difficulty": "fact"
+  },
+  {
+    "id": "q002",
+    "question": "How does FastAPI know what to do with a callable passed to Depends?",
+    "reference_answer": "The developer passes the callable to Depends; FastAPI analyzes its parameters like a path operation function and calls it with the required values for each request, without separate registration.",
+    "relevant_documents": [
+      "doc_97add4ed2c662b4c580315e5bd07e009a5f6858dff61e42e572ebd5832f07d6f"
+    ],
+    "relevant_chunks": [
+      "chunk_8410fc104cbba877f60c62dfba703377315027111519f18f84210962f5b41419",
+      "chunk_e20b19f85be3bb2ad4a48e82dbde5b128d82ad6a46633de0bdeeb6626ef8b134"
+    ],
+    "chunk_relevance": {
+      "chunk_8410fc104cbba877f60c62dfba703377315027111519f18f84210962f5b41419": 2,
+      "chunk_e20b19f85be3bb2ad4a48e82dbde5b128d82ad6a46633de0bdeeb6626ef8b134": 1
+    },
+    "difficulty": "fact"
+  },
+  {
+    "id": "q003",
+    "question": "How are dependency requirements represented in FastAPI's generated API documentation?",
+    "reference_answer": "Parameters, validations, and requirements declared by dependencies and sub-dependencies are added to the OpenAPI schema and shown in the interactive documentation.",
+    "relevant_documents": [
+      "doc_97add4ed2c662b4c580315e5bd07e009a5f6858dff61e42e572ebd5832f07d6f"
+    ],
+    "relevant_chunks": [
+      "chunk_bb8ad8fb21de94977a41c262b82ebae2ae96d4542e03cd1fbd746e0e652b1b85",
+      "chunk_1aedfeace05dc6386f5efa0b4c517ad926ce622e25a40c3a79120b71e65723c1"
+    ],
+    "chunk_relevance": {
+      "chunk_bb8ad8fb21de94977a41c262b82ebae2ae96d4542e03cd1fbd746e0e652b1b85": 2,
+      "chunk_1aedfeace05dc6386f5efa0b4c517ad926ce622e25a40c3a79120b71e65723c1": 1
+    },
+    "difficulty": "fact"
+  },
+  {
+    "id": "q004",
+    "question": "How can a Transformers Pipeline be assigned to CPU, GPU, or Apple Silicon?",
+    "reference_answer": "Configure the Pipeline device, using the supported device identifier or an Accelerate device map so model weights are placed on suitable hardware.",
+    "relevant_documents": [
+      "doc_416c540cf133e4b620ffd26993838ac4fd5cbcf8219c196756bdf5f2765ed937"
+    ],
+    "relevant_chunks": [
+      "chunk_956b19cd3a6b8048a2c00f1088a52574ecffeafe6100e43c2fb73481eba55f87",
+      "chunk_fb426b5076f1819e1d1683752c9b7c36b1eca1967d6ac8d3076b1db374082653"
+    ],
+    "chunk_relevance": {
+      "chunk_956b19cd3a6b8048a2c00f1088a52574ecffeafe6100e43c2fb73481eba55f87": 2,
+      "chunk_fb426b5076f1819e1d1683752c9b7c36b1eca1967d6ac8d3076b1db374082653": 1
+    },
+    "difficulty": "fact"
+  },
+  {
+    "id": "q005",
+    "question": "Why does the Transformers documentation caution against batching inputs with unknown sequence lengths?",
+    "reference_answer": "Uneven sequence lengths can introduce heavy padding, reduce throughput, and cause out-of-memory failures, so batching should be measured and guarded with OOM checks.",
+    "relevant_documents": [
+      "doc_416c540cf133e4b620ffd26993838ac4fd5cbcf8219c196756bdf5f2765ed937"
+    ],
+    "relevant_chunks": [
+      "chunk_d3f2f420bb384f0afacf3b983021a087d8ab05cbdf9c81bf72ff031cdc1aced0"
+    ],
+    "chunk_relevance": {
+      "chunk_d3f2f420bb384f0afacf3b983021a087d8ab05cbdf9c81bf72ff031cdc1aced0": 2
+    },
+    "difficulty": "fact"
+  },
+  {
+    "id": "q006",
+    "question": "How can the default pretrained model used by a Transformers Pipeline be replaced?",
+    "reference_answer": "Pass the desired model identifier through the Pipeline model parameter instead of relying on the task's default pretrained model and preprocessor.",
+    "relevant_documents": [
+      "doc_416c540cf133e4b620ffd26993838ac4fd5cbcf8219c196756bdf5f2765ed937"
+    ],
+    "relevant_chunks": [
+      "chunk_d1180e8d6ffd5cce2f77e63f9a9f9f1332b94b7582a8c9c029a86e012847ea45"
+    ],
+    "chunk_relevance": {
+      "chunk_d1180e8d6ffd5cce2f77e63f9a9f9f1332b94b7582a8c9c029a86e012847ea45": 2
+    },
+    "difficulty": "fact"
+  },
+  {
+    "id": "q007",
+    "question": "What is Hugging Face Text Embeddings Inference designed to serve?",
+    "reference_answer": "Text Embeddings Inference is a production-oriented toolkit for deploying and serving open-source text embedding and sequence-classification models with features such as dynamic batching and observability.",
+    "relevant_documents": [
+      "doc_804c8377e1908e9583942234825e7b5df1e3d0528aff172b36538e5a542bf6b0"
+    ],
+    "relevant_chunks": [
+      "chunk_88acf2e84e52b7fc08a9e4d8c192e58752cf204ff470b0e62090af7b9d041c5e",
+      "chunk_91886f8dfcacd49ebef6dff8176cb02b7e42ce717d47fd6ceeedc343f7d9f183"
+    ],
+    "chunk_relevance": {
+      "chunk_88acf2e84e52b7fc08a9e4d8c192e58752cf204ff470b0e62090af7b9d041c5e": 2,
+      "chunk_91886f8dfcacd49ebef6dff8176cb02b7e42ce717d47fd6ceeedc343f7d9f183": 1
+    },
+    "difficulty": "fact"
+  },
+  {
+    "id": "q008",
+    "question": "What does the max_batch_tokens setting control in Text Embeddings Inference?",
+    "reference_answer": "It limits the total potential tokens in a batch, controlling how many requests of different token lengths can fit together to maximize hardware utilization.",
+    "relevant_documents": [
+      "doc_804c8377e1908e9583942234825e7b5df1e3d0528aff172b36538e5a542bf6b0"
+    ],
+    "relevant_chunks": [
+      "chunk_870cf142bf9cc251ba5e0810dc36c41d88729b3bdcecca2196e6ea56d01d8097"
+    ],
+    "chunk_relevance": {
+      "chunk_870cf142bf9cc251ba5e0810dc36c41d88729b3bdcecca2196e6ea56d01d8097": 2
+    },
+    "difficulty": "fact"
+  },
+  {
+    "id": "q009",
+    "question": "How does Text Embeddings Inference support deployment in an air-gapped environment?",
+    "reference_answer": "Download the model weights in advance, mount them into the container as a volume, and start TEI with the mounted local model path.",
+    "relevant_documents": [
+      "doc_804c8377e1908e9583942234825e7b5df1e3d0528aff172b36538e5a542bf6b0"
+    ],
+    "relevant_chunks": [
+      "chunk_2d0088f75d30dcdfcd5ec4714df26baea721dd35fdcaa7f340f18eef255232e7"
+    ],
+    "chunk_relevance": {
+      "chunk_2d0088f75d30dcdfcd5ec4714df26baea721dd35fdcaa7f340f18eef255232e7": 2
+    },
+    "difficulty": "fact"
+  },
+  {
+    "id": "q010",
+    "question": "When does a Qdrant Match Any payload condition succeed?",
+    "reference_answer": "It succeeds when the stored keyword or integer value equals any configured value; for an array, at least one stored element must match one of them.",
+    "relevant_documents": [
+      "doc_1713ab05743cc108791b3eea9872aed4153364e83ba8337235146d6e25b302a9"
+    ],
+    "relevant_chunks": [
+      "chunk_2f181aae2739cf2e7c91798c7d9fd915848089a40f3000874977a2e6c9952cf2"
+    ],
+    "chunk_relevance": {
+      "chunk_2f181aae2739cf2e7c91798c7d9fd915848089a40f3000874977a2e6c9952cf2": 2
+    },
+    "difficulty": "fact"
+  },
+  {
+    "id": "q011",
+    "question": "Why would a Qdrant nested object filter be needed for an array of objects?",
+    "reference_answer": "It ensures all conditions are evaluated against the same array element instead of allowing different elements to satisfy different conditions.",
+    "relevant_documents": [
+      "doc_1713ab05743cc108791b3eea9872aed4153364e83ba8337235146d6e25b302a9"
+    ],
+    "relevant_chunks": [
+      "chunk_3af51a31bbbc0f3575860a94af5242bdcc036b967b34a316676f6be760688823",
+      "chunk_67dfc506017e8700771afc3d03c08e33123053c97c1815e07c3f73b32fdb059b"
+    ],
+    "chunk_relevance": {
+      "chunk_3af51a31bbbc0f3575860a94af5242bdcc036b967b34a316676f6be760688823": 2,
+      "chunk_67dfc506017e8700771afc3d03c08e33123053c97c1815e07c3f73b32fdb059b": 1
+    },
+    "difficulty": "fact"
+  },
+  {
+    "id": "q012",
+    "question": "How does Qdrant optimize cosine similarity calculations for stored vectors?",
+    "reference_answer": "Qdrant normalizes each vector once when it is added to the collection, then uses a dot-product-style comparison during search.",
+    "relevant_documents": [
+      "doc_3f18686b3efe2fa035065d587481604931b8a3da8ba0c41e1d56bf801231058d"
+    ],
+    "relevant_chunks": [
+      "chunk_c009ce573faa73149f54c4673a75779ef3616b8e15f771968c3ebfe2423c94fb"
+    ],
+    "chunk_relevance": {
+      "chunk_c009ce573faa73149f54c4673a75779ef3616b8e15f771968c3ebfe2423c94fb": 2
+    },
+    "difficulty": "fact"
+  },
+  {
+    "id": "q013",
+    "question": "What does score_threshold do in a Qdrant search request?",
+    "reference_answer": "It removes results whose scores are worse than the threshold, with the direction of worse depending on the configured distance metric.",
+    "relevant_documents": [
+      "doc_3f18686b3efe2fa035065d587481604931b8a3da8ba0c41e1d56bf801231058d"
+    ],
+    "relevant_chunks": [
+      "chunk_2ab6cbd06f6e3de15c08df1239957715b8eb194bb2ba9477b596d1a5ad62d9d0"
+    ],
+    "chunk_relevance": {
+      "chunk_2ab6cbd06f6e3de15c08df1239957715b8eb194bb2ba9477b596d1a5ad62d9d0": 2
+    },
+    "difficulty": "fact"
+  },
+  {
+    "id": "q014",
+    "question": "Why can large offset pagination be unreliable for HNSW vector search?",
+    "reference_answer": "HNSW is not designed to retrieve an arbitrary Nth neighbor without first retrieving earlier neighbors, so offsets can be expensive and may duplicate or skip points as the index changes.",
+    "relevant_documents": [
+      "doc_3f18686b3efe2fa035065d587481604931b8a3da8ba0c41e1d56bf801231058d"
+    ],
+    "relevant_chunks": [
+      "chunk_4c30c5813d4188f2e9a8f618747134e97e40551a428c6df398f0eff1ae227033",
+      "chunk_add09af55ae85b47c39406570995c783b243b6072562555b84ea4ea6dd3789be"
+    ],
+    "chunk_relevance": {
+      "chunk_4c30c5813d4188f2e9a8f618747134e97e40551a428c6df398f0eff1ae227033": 2,
+      "chunk_add09af55ae85b47c39406570995c783b243b6072562555b84ea4ea6dd3789be": 1
+    },
+    "difficulty": "fact"
+  },
+  {
+    "id": "q015",
+    "question": "How does reciprocal rank fusion reward a document appearing in multiple result lists?",
+    "reference_answer": "RRF sums contributions based on the document's rank in each result list, so documents near the top of one or several rankings receive larger fused scores.",
+    "relevant_documents": [
+      "doc_9c43d9706c0c1cdeca2b66726c352e1c4c664b3524573835ff114d769fe1a982"
+    ],
+    "relevant_chunks": [
+      "chunk_daae9d216ea721d25578ad69396dc72af20d7267122445f9bdbae428f05d3178"
+    ],
+    "chunk_relevance": {
+      "chunk_daae9d216ea721d25578ad69396dc72af20d7267122445f9bdbae428f05d3178": 2
+    },
+    "difficulty": "fact"
+  },
+  {
+    "id": "q016",
+    "question": "How does Qdrant's distribution-based score fusion normalize retriever scores?",
+    "reference_answer": "DBSF uses each result set's score distribution to map scores into a comparable range before summing them; it is stateless and derives limits from the current query's returned points.",
+    "relevant_documents": [
+      "doc_9c43d9706c0c1cdeca2b66726c352e1c4c664b3524573835ff114d769fe1a982"
+    ],
+    "relevant_chunks": [
+      "chunk_2d04fab5dc6136820f1389a9fca36d962bd7d97d40115917270aa10060c0cfaf",
+      "chunk_26913a5d189a92dae0d4904f6f0f081337e8bf6258880e38a5025ccb5370aeb1"
+    ],
+    "chunk_relevance": {
+      "chunk_2d04fab5dc6136820f1389a9fca36d962bd7d97d40115917270aa10060c0cfaf": 2,
+      "chunk_26913a5d189a92dae0d4904f6f0f081337e8bf6258880e38a5025ccb5370aeb1": 1
+    },
+    "difficulty": "fact"
+  },
+  {
+    "id": "q017",
+    "question": "What problem is semantic search intended to solve beyond literal keyword matching?",
+    "reference_answer": "Semantic search tries to understand query and corpus meaning, allowing relevant matches despite synonyms, abbreviations, and misspellings.",
+    "relevant_documents": [
+      "doc_bf81b73c4b2c1bf01ca9d5f719272ec97efe4277e50d97585dc73cece6d3be1f"
+    ],
+    "relevant_chunks": [
+      "chunk_0cdf74730e2d2bcb881afbfa93d5df579c1cf1b0778741bb2209ba2663f81456"
+    ],
+    "chunk_relevance": {
+      "chunk_0cdf74730e2d2bcb881afbfa93d5df579c1cf1b0778741bb2209ba2663f81456": 2
+    },
+    "difficulty": "fact"
+  },
+  {
+    "id": "q018",
+    "question": "What efficiency and quality trade-off does a CrossEncoder reranker introduce?",
+    "reference_answer": "A CrossEncoder can substantially improve the final ordering of candidates but is too slow to score a very large corpus, so an efficient retriever first narrows the candidate set.",
+    "relevant_documents": [
+      "doc_222c62b30b8afbccb200e15c27755f8bdc8824ed40c5eaae8555358848f64c69"
+    ],
+    "relevant_chunks": [
+      "chunk_4ee9dba9bb33730e7f356d40e3da399bdac00a5b2006e46e251f2fd68c4b5f17"
+    ],
+    "chunk_relevance": {
+      "chunk_4ee9dba9bb33730e7f356d40e3da399bdac00a5b2006e46e251f2fd68c4b5f17": 2
+    },
+    "difficulty": "fact"
+  },
+  {
+    "id": "q019",
+    "question": "Describe the path from declaring a FastAPI dependency to receiving its value during a request.",
+    "reference_answer": "A callable declares parameters like a path operation, it is passed to Depends in a dependent function, FastAPI resolves and calls it for each request, and injects its return value while reusing the declarations for validation and documentation.",
+    "relevant_documents": [
+      "doc_97add4ed2c662b4c580315e5bd07e009a5f6858dff61e42e572ebd5832f07d6f"
+    ],
+    "relevant_chunks": [
+      "chunk_650291a57f062c2b9952069182c54be8e1b246992c87b738659aa622aa60bb72",
+      "chunk_8410fc104cbba877f60c62dfba703377315027111519f18f84210962f5b41419",
+      "chunk_e20b19f85be3bb2ad4a48e82dbde5b128d82ad6a46633de0bdeeb6626ef8b134"
+    ],
+    "chunk_relevance": {
+      "chunk_650291a57f062c2b9952069182c54be8e1b246992c87b738659aa622aa60bb72": 1,
+      "chunk_8410fc104cbba877f60c62dfba703377315027111519f18f84210962f5b41419": 2,
+      "chunk_e20b19f85be3bb2ad4a48e82dbde5b128d82ad6a46633de0bdeeb6626ef8b134": 2
+    },
+    "difficulty": "multi_chunk"
+  },
+  {
+    "id": "q020",
+    "question": "How do synchronous and asynchronous dependencies interact with path operations, and how are their requirements exposed?",
+    "reference_answer": "FastAPI permits def and async def dependencies with either def or async def path operations, handles their execution, and integrates their declared requirements into OpenAPI and interactive docs.",
+    "relevant_documents": [
+      "doc_97add4ed2c662b4c580315e5bd07e009a5f6858dff61e42e572ebd5832f07d6f"
+    ],
+    "relevant_chunks": [
+      "chunk_bb8ad8fb21de94977a41c262b82ebae2ae96d4542e03cd1fbd746e0e652b1b85",
+      "chunk_1aedfeace05dc6386f5efa0b4c517ad926ce622e25a40c3a79120b71e65723c1"
+    ],
+    "chunk_relevance": {
+      "chunk_bb8ad8fb21de94977a41c262b82ebae2ae96d4542e03cd1fbd746e0e652b1b85": 2,
+      "chunk_1aedfeace05dc6386f5efa0b4c517ad926ce622e25a40c3a79120b71e65723c1": 2
+    },
+    "difficulty": "multi_chunk"
+  },
+  {
+    "id": "q021",
+    "question": "What practical guidance does the Transformers Pipeline documentation give for deciding whether to batch inference?",
+    "reference_answer": "Benchmark on the target hardware and data, use batch_size only when throughput benefits, account for padding and sequence lengths, and add OOM safeguards because batching can either accelerate or severely degrade inference.",
+    "relevant_documents": [
+      "doc_416c540cf133e4b620ffd26993838ac4fd5cbcf8219c196756bdf5f2765ed937"
+    ],
+    "relevant_chunks": [
+      "chunk_27822ef34f658c4cd363f1944247289ac26fda50bd962373b2fee1a78bcfbc01",
+      "chunk_598e09799a745d467c11a11c175ee994d48b165376c92cdefb623fa59627a7c8",
+      "chunk_46d56a255d1e286050a88cffde66dcf5cc823f9a5db6c306c0492336c7c7c29e",
+      "chunk_d3f2f420bb384f0afacf3b983021a087d8ab05cbdf9c81bf72ff031cdc1aced0"
+    ],
+    "chunk_relevance": {
+      "chunk_27822ef34f658c4cd363f1944247289ac26fda50bd962373b2fee1a78bcfbc01": 1,
+      "chunk_598e09799a745d467c11a11c175ee994d48b165376c92cdefb623fa59627a7c8": 1,
+      "chunk_46d56a255d1e286050a88cffde66dcf5cc823f9a5db6c306c0492336c7c7c29e": 1,
+      "chunk_d3f2f420bb384f0afacf3b983021a087d8ab05cbdf9c81bf72ff031cdc1aced0": 2
+    },
+    "difficulty": "multi_chunk"
+  },
+  {
+    "id": "q022",
+    "question": "How can Transformers Pipeline place a large model across hardware and reduce its memory requirements?",
+    "reference_answer": "It can use Accelerate device mapping to distribute weights across available devices and lower-precision dtypes such as float16 or bfloat16 when supported to reduce memory use.",
+    "relevant_documents": [
+      "doc_416c540cf133e4b620ffd26993838ac4fd5cbcf8219c196756bdf5f2765ed937"
+    ],
+    "relevant_chunks": [
+      "chunk_fb426b5076f1819e1d1683752c9b7c36b1eca1967d6ac8d3076b1db374082653",
+      "chunk_225eb5db3693cb0136dbb65555425525067c8e7c038456a523bd705494271f76",
+      "chunk_bade1d6d82717854c1d75addf0de233af7770a6c25a08b83fbaff88432cb1fa3"
+    ],
+    "chunk_relevance": {
+      "chunk_fb426b5076f1819e1d1683752c9b7c36b1eca1967d6ac8d3076b1db374082653": 2,
+      "chunk_225eb5db3693cb0136dbb65555425525067c8e7c038456a523bd705494271f76": 2,
+      "chunk_bade1d6d82717854c1d75addf0de233af7770a6c25a08b83fbaff88432cb1fa3": 1
+    },
+    "difficulty": "multi_chunk"
+  },
+  {
+    "id": "q023",
+    "question": "What steps and configuration are involved in starting Text Embeddings Inference and requesting an embedding?",
+    "reference_answer": "Start the appropriate TEI container with a model ID and mounted cache or model data, expose its port, then POST input text as JSON to the embed endpoint; compatible model IDs or local model directories can be used.",
+    "relevant_documents": [
+      "doc_804c8377e1908e9583942234825e7b5df1e3d0528aff172b36538e5a542bf6b0"
+    ],
+    "relevant_chunks": [
+      "chunk_932fdb9a277cfdeff13cdb952d4e871597fa55623430b160efcb15548536c9a3",
+      "chunk_bb5d240b51ad3e3deb3234193c79abecc9464d11ac6f6c21ecd5f316b8ccdccd"
+    ],
+    "chunk_relevance": {
+      "chunk_932fdb9a277cfdeff13cdb952d4e871597fa55623430b160efcb15548536c9a3": 2,
+      "chunk_bb5d240b51ad3e3deb3234193c79abecc9464d11ac6f6c21ecd5f316b8ccdccd": 1
+    },
+    "difficulty": "multi_chunk"
+  },
+  {
+    "id": "q024",
+    "question": "How are reranker models deployed and queried through Text Embeddings Inference?",
+    "reference_answer": "TEI supports sequence-classification cross-encoders as rerankers; launch a compatible reranker model, then POST a query and candidate texts to the rerank endpoint to receive similarity-based ranks.",
+    "relevant_documents": [
+      "doc_804c8377e1908e9583942234825e7b5df1e3d0528aff172b36538e5a542bf6b0"
+    ],
+    "relevant_chunks": [
+      "chunk_664c8b82b3110def99b5d756e8e43359f9ac5c1d8e6e2ba669bc03944617bf62",
+      "chunk_f4d2887c85245189307680a3dc340510b9ff3096e825399fac5e4bd4e873d43a"
+    ],
+    "chunk_relevance": {
+      "chunk_664c8b82b3110def99b5d756e8e43359f9ac5c1d8e6e2ba669bc03944617bf62": 2,
+      "chunk_f4d2887c85245189307680a3dc340510b9ff3096e825399fac5e4bd4e873d43a": 2
+    },
+    "difficulty": "multi_chunk"
+  },
+  {
+    "id": "q025",
+    "question": "Compare Qdrant's must, should, and must_not filtering clauses.",
+    "reference_answer": "must requires every listed condition like AND, should requires at least one like OR, and must_not requires none of the listed conditions to match; clauses can be combined and nested.",
+    "relevant_documents": [
+      "doc_1713ab05743cc108791b3eea9872aed4153364e83ba8337235146d6e25b302a9"
+    ],
+    "relevant_chunks": [
+      "chunk_09e6d8556030eaaddb06afe2568a4ba025b04a46d5a8b30b1a163c800da4000a",
+      "chunk_46234ee4cf4574915dc7c0c65e651d1e6ebe240ff12ef1e9e4c9dac9a43895e8",
+      "chunk_c4ee9e989a7808f00c5a4966fa1be673254072a3e0bbea0446590bd1e08feebf"
+    ],
+    "chunk_relevance": {
+      "chunk_09e6d8556030eaaddb06afe2568a4ba025b04a46d5a8b30b1a163c800da4000a": 2,
+      "chunk_46234ee4cf4574915dc7c0c65e651d1e6ebe240ff12ef1e9e4c9dac9a43895e8": 2,
+      "chunk_c4ee9e989a7808f00c5a4966fa1be673254072a3e0bbea0446590bd1e08feebf": 2
+    },
+    "difficulty": "multi_chunk"
+  },
+  {
+    "id": "q026",
+    "question": "How does Qdrant filter nested fields and ensure conditions match within one array element?",
+    "reference_answer": "Dot notation addresses nested fields and [] projects values through arrays, while a nested object filter scopes all conditions to each individual array element and accepts a parent when one element satisfies them together.",
+    "relevant_documents": [
+      "doc_1713ab05743cc108791b3eea9872aed4153364e83ba8337235146d6e25b302a9"
+    ],
+    "relevant_chunks": [
+      "chunk_48adabf5d9956c31112353e70866084cdad60b384495ae2f9fa1bdf4eb078bdb",
+      "chunk_bf5ff7d6646dd386ce55f4a6a43b5127af79536d6b79c07f888e01b0f571f128",
+      "chunk_3af51a31bbbc0f3575860a94af5242bdcc036b967b34a316676f6be760688823",
+      "chunk_67dfc506017e8700771afc3d03c08e33123053c97c1815e07c3f73b32fdb059b"
+    ],
+    "chunk_relevance": {
+      "chunk_48adabf5d9956c31112353e70866084cdad60b384495ae2f9fa1bdf4eb078bdb": 1,
+      "chunk_bf5ff7d6646dd386ce55f4a6a43b5127af79536d6b79c07f888e01b0f571f128": 2,
+      "chunk_3af51a31bbbc0f3575860a94af5242bdcc036b967b34a316676f6be760688823": 2,
+      "chunk_67dfc506017e8700771afc3d03c08e33123053c97c1815e07c3f73b32fdb059b": 1
+    },
+    "difficulty": "multi_chunk"
+  },
+  {
+    "id": "q027",
+    "question": "How can Qdrant group chunk-level search hits by document and attach document-level metadata without duplicating it on every chunk?",
+    "reference_answer": "Store document_id on chunk points, group search hits by that field, keep titles or abstracts once in a separate document collection, and use with_lookup to attach the matching document payload.",
+    "relevant_documents": [
+      "doc_3f18686b3efe2fa035065d587481604931b8a3da8ba0c41e1d56bf801231058d"
+    ],
+    "relevant_chunks": [
+      "chunk_76f1595996b9fc24a98741c470092b714dbcc142a4d3e31b2ed722e1ab00d59a",
+      "chunk_6233fd013f990d7e934e558a3374c2e58d2cb5e47aa09191ace849a4ac11ab75",
+      "chunk_77726f764418f4461cf31408602cf67433f3c4751ad59efa23a10e2c1ab614bb",
+      "chunk_87346f39468b342c5af8df04c039b2317abfb529aee8e4a69504c1c523bc4067"
+    ],
+    "chunk_relevance": {
+      "chunk_76f1595996b9fc24a98741c470092b714dbcc142a4d3e31b2ed722e1ab00d59a": 2,
+      "chunk_6233fd013f990d7e934e558a3374c2e58d2cb5e47aa09191ace849a4ac11ab75": 1,
+      "chunk_77726f764418f4461cf31408602cf67433f3c4751ad59efa23a10e2c1ab614bb": 2,
+      "chunk_87346f39468b342c5af8df04c039b2317abfb529aee8e4a69504c1c523bc4067": 2
+    },
+    "difficulty": "multi_chunk"
+  },
+  {
+    "id": "q028",
+    "question": "How does Qdrant use prefetches for a coarse-to-fine multi-stage search?",
+    "reference_answer": "Prefetch subqueries first produce candidates using cheaper or smaller representations, and the main query then scores or rescoring those candidates with a more accurate representation; prefetch limits must supply enough candidates.",
+    "relevant_documents": [
+      "doc_9c43d9706c0c1cdeca2b66726c352e1c4c664b3524573835ff114d769fe1a982"
+    ],
+    "relevant_chunks": [
+      "chunk_b25a05265a1716f196444b59a292327a26563d7a47e76d73082e3cc0e1b106d7",
+      "chunk_0747f054593e6ff29eae3d2a19fb6cf0583a927b697268ef68143f7abf346728",
+      "chunk_560b3b4dc3257bcef98fab21ba8bd718e1813e942ec476deee63c715b860f225"
+    ],
+    "chunk_relevance": {
+      "chunk_b25a05265a1716f196444b59a292327a26563d7a47e76d73082e3cc0e1b106d7": 2,
+      "chunk_0747f054593e6ff29eae3d2a19fb6cf0583a927b697268ef68143f7abf346728": 2,
+      "chunk_560b3b4dc3257bcef98fab21ba8bd718e1813e942ec476deee63c715b860f225": 2
+    },
+    "difficulty": "multi_chunk"
+  },
+  {
+    "id": "q029",
+    "question": "How should query and document encoding differ for symmetric versus asymmetric semantic search?",
+    "reference_answer": "Symmetric search uses similarly sized query and corpus texts, while asymmetric search maps short queries to longer answer passages; recommended models may use encode_query and encode_document so prompts and routing reflect those roles.",
+    "relevant_documents": [
+      "doc_bf81b73c4b2c1bf01ca9d5f719272ec97efe4277e50d97585dc73cece6d3be1f"
+    ],
+    "relevant_chunks": [
+      "chunk_06250ca9a7eb20a7e85ee596dc60d6dbf214a16dc22dad20af72bca7e991a9f0",
+      "chunk_17a5d8f499175342dcfadb660c2c918b02ad3c9f1fd440f03589f9858a11ba69",
+      "chunk_eda42c71fd82000acf67de25aba3eda328149d54470916926e22c7859420ca8e",
+      "chunk_810ee57ef050d3e1d6aaa73ffc7e6d8d51ca9b11454f0a45e649d5bc90810485"
+    ],
+    "chunk_relevance": {
+      "chunk_06250ca9a7eb20a7e85ee596dc60d6dbf214a16dc22dad20af72bca7e991a9f0": 2,
+      "chunk_17a5d8f499175342dcfadb660c2c918b02ad3c9f1fd440f03589f9858a11ba69": 2,
+      "chunk_eda42c71fd82000acf67de25aba3eda328149d54470916926e22c7859420ca8e": 2,
+      "chunk_810ee57ef050d3e1d6aaa73ffc7e6d8d51ca9b11454f0a45e649d5bc90810485": 1
+    },
+    "difficulty": "multi_chunk"
+  },
+  {
+    "id": "q030",
+    "question": "What options does Sentence Transformers describe for scaling semantic search beyond a manual in-memory implementation?",
+    "reference_answer": "Use the optimized semantic_search utility for suitable corpora, keep query and corpus embeddings on the same GPU when possible, or use approximate-nearest-neighbor/vector systems such as FAISS, Annoy, HNSWlib, Elasticsearch, or OpenSearch for larger corpora.",
+    "relevant_documents": [
+      "doc_bf81b73c4b2c1bf01ca9d5f719272ec97efe4277e50d97585dc73cece6d3be1f"
+    ],
+    "relevant_chunks": [
+      "chunk_293b419bb31d44e5b59d6b65009b2708fa24711d3372d2db12d3ea963c260721",
+      "chunk_bb8e3f0d06c7af0619a884ab227019958efbf2131176dd7e32325fadb6c8cd64",
+      "chunk_e7cb4194151d952f056f76892bf3babf9c012b6cb75a5b8aa2fe83551fba3122",
+      "chunk_ce3b9c13747da4f724510d997079023a5dc5e4a9b81e945ed4c53fbf79bc2f79",
+      "chunk_effe795c19ee0c01b9ae4ebe9b5ff8c26444740a20befb28c3555ed12092f4ca"
+    ],
+    "chunk_relevance": {
+      "chunk_293b419bb31d44e5b59d6b65009b2708fa24711d3372d2db12d3ea963c260721": 2,
+      "chunk_bb8e3f0d06c7af0619a884ab227019958efbf2131176dd7e32325fadb6c8cd64": 1,
+      "chunk_e7cb4194151d952f056f76892bf3babf9c012b6cb75a5b8aa2fe83551fba3122": 1,
+      "chunk_ce3b9c13747da4f724510d997079023a5dc5e4a9b81e945ed4c53fbf79bc2f79": 1,
+      "chunk_effe795c19ee0c01b9ae4ebe9b5ff8c26444740a20befb28c3555ed12092f4ca": 2
+    },
+    "difficulty": "multi_chunk"
+  },
+  {
+    "id": "q031",
+    "question": "Why can dense semantic retrieval find matches that lexical search misses?",
+    "reference_answer": "Dense semantic retrieval compares learned meaning representations and can match synonyms, abbreviations, and misspellings, whereas lexical retrieval depends on literal query-word matches and may miss equivalent wording.",
+    "relevant_documents": [
+      "doc_bf81b73c4b2c1bf01ca9d5f719272ec97efe4277e50d97585dc73cece6d3be1f",
+      "doc_222c62b30b8afbccb200e15c27755f8bdc8824ed40c5eaae8555358848f64c69"
+    ],
+    "relevant_chunks": [
+      "chunk_0cdf74730e2d2bcb881afbfa93d5df579c1cf1b0778741bb2209ba2663f81456",
+      "chunk_9ac8a4dcfbb4f61f931863f6ff5b68726298a893cd95f332bb806225fcdf8a38"
+    ],
+    "chunk_relevance": {
+      "chunk_0cdf74730e2d2bcb881afbfa93d5df579c1cf1b0778741bb2209ba2663f81456": 2,
+      "chunk_9ac8a4dcfbb4f61f931863f6ff5b68726298a893cd95f332bb806225fcdf8a38": 2
+    },
+    "difficulty": "cross_document"
+  },
+  {
+    "id": "q032",
+    "question": "How does a bi-encoder and CrossEncoder two-stage retrieval pipeline work?",
+    "reference_answer": "A fast bi-encoder independently embeds the query and corpus to retrieve a candidate set; a slower CrossEncoder then scores query-candidate pairs and reranks the best candidates for final presentation.",
+    "relevant_documents": [
+      "doc_222c62b30b8afbccb200e15c27755f8bdc8824ed40c5eaae8555358848f64c69",
+      "doc_bf81b73c4b2c1bf01ca9d5f719272ec97efe4277e50d97585dc73cece6d3be1f"
+    ],
+    "relevant_chunks": [
+      "chunk_b695c1d3749ee3365c1077023f0b3aeb3d24ae1e9b34e53e47288ee8f69f3b10",
+      "chunk_974c0df1918ac55b24e97853137d247ce88e7ef3583b33dcc8bb30fa3f5e26b7",
+      "chunk_4ee9dba9bb33730e7f356d40e3da399bdac00a5b2006e46e251f2fd68c4b5f17",
+      "chunk_f77f5aa237e8adacaeb1cf4105e66b9737c7a3c1d1df3ff7cccf290b7a2c5ad0"
+    ],
+    "chunk_relevance": {
+      "chunk_b695c1d3749ee3365c1077023f0b3aeb3d24ae1e9b34e53e47288ee8f69f3b10": 1,
+      "chunk_974c0df1918ac55b24e97853137d247ce88e7ef3583b33dcc8bb30fa3f5e26b7": 2,
+      "chunk_4ee9dba9bb33730e7f356d40e3da399bdac00a5b2006e46e251f2fd68c4b5f17": 2,
+      "chunk_f77f5aa237e8adacaeb1cf4105e66b9737c7a3c1d1df3ff7cccf290b7a2c5ad0": 1
+    },
+    "difficulty": "cross_document"
+  },
+  {
+    "id": "q033",
+    "question": "How do local SentenceTransformer embedding calls differ from serving embeddings with Text Embeddings Inference?",
+    "reference_answer": "SentenceTransformer loads a model in the Python process and returns arrays from encode, while TEI runs compatible models as a serving system and exposes endpoints such as /embed with batching and operational features.",
+    "relevant_documents": [
+      "doc_da10badd8e53f12427e79c26045c803ee25ee0e4bc0cd79a88904bbd8e8ec593",
+      "doc_804c8377e1908e9583942234825e7b5df1e3d0528aff172b36538e5a542bf6b0"
+    ],
+    "relevant_chunks": [
+      "chunk_b8e00336e349a014f2a034f36498de7b65a2f63853969a38942bace3ba755af0",
+      "chunk_3119cb0c2a7b12e9cd954a6e8b47d18c24c3626e3d3e791e1573d0435ddfa0da",
+      "chunk_88acf2e84e52b7fc08a9e4d8c192e58752cf204ff470b0e62090af7b9d041c5e",
+      "chunk_932fdb9a277cfdeff13cdb952d4e871597fa55623430b160efcb15548536c9a3"
+    ],
+    "chunk_relevance": {
+      "chunk_b8e00336e349a014f2a034f36498de7b65a2f63853969a38942bace3ba755af0": 2,
+      "chunk_3119cb0c2a7b12e9cd954a6e8b47d18c24c3626e3d3e791e1573d0435ddfa0da": 2,
+      "chunk_88acf2e84e52b7fc08a9e4d8c192e58752cf204ff470b0e62090af7b9d041c5e": 1,
+      "chunk_932fdb9a277cfdeff13cdb952d4e871597fa55623430b160efcb15548536c9a3": 2
+    },
+    "difficulty": "cross_document"
+  },
+  {
+    "id": "q034",
+    "question": "How are embeddings and cosine similarity used from Sentence Transformers through Qdrant search?",
+    "reference_answer": "Sentence Transformers encodes text into numeric vectors whose similarity can be compared; Qdrant stores those vectors, normalizes them for cosine distance when inserted, and retrieves nearest vectors by similarity.",
+    "relevant_documents": [
+      "doc_da10badd8e53f12427e79c26045c803ee25ee0e4bc0cd79a88904bbd8e8ec593",
+      "doc_bf81b73c4b2c1bf01ca9d5f719272ec97efe4277e50d97585dc73cece6d3be1f",
+      "doc_3f18686b3efe2fa035065d587481604931b8a3da8ba0c41e1d56bf801231058d"
+    ],
+    "relevant_chunks": [
+      "chunk_3119cb0c2a7b12e9cd954a6e8b47d18c24c3626e3d3e791e1573d0435ddfa0da",
+      "chunk_701b073b904ebc87cbe31d2e2de19a6bb2a018e74fb783926ce68044560a9f0a",
+      "chunk_c009ce573faa73149f54c4673a75779ef3616b8e15f771968c3ebfe2423c94fb"
+    ],
+    "chunk_relevance": {
+      "chunk_3119cb0c2a7b12e9cd954a6e8b47d18c24c3626e3d3e791e1573d0435ddfa0da": 2,
+      "chunk_701b073b904ebc87cbe31d2e2de19a6bb2a018e74fb783926ce68044560a9f0a": 1,
+      "chunk_c009ce573faa73149f54c4673a75779ef3616b8e15f771968c3ebfe2423c94fb": 2
+    },
+    "difficulty": "cross_document"
+  },
+  {
+    "id": "q035",
+    "question": "What is the difference between filtering Qdrant candidates and boosting their final ranking with metadata?",
+    "reference_answer": "Filtering uses payload or ID conditions to include or exclude candidates according to constraints, while formula-based score boosting keeps candidates but adjusts their ranking using payload values, conditions, or prefetch scores.",
+    "relevant_documents": [
+      "doc_1713ab05743cc108791b3eea9872aed4153364e83ba8337235146d6e25b302a9",
+      "doc_e0b54fd30a8994f981c5d01994cd97f3dcb6ab4d668c0726a607ee2a6bcd65d9"
+    ],
+    "relevant_chunks": [
+      "chunk_3a6dc08677006a4600ef6a9b8c49e1bd5b915581b73365b774d69a524563f3f9",
+      "chunk_60e454d80cf03c03c89ebf1b5d7aa74e47c5c50e8430dc07d01b5fda5effa63c",
+      "chunk_03bc9339b320b54d706ca43b51c994a8d156c2437019eec56e8ecdd1416ff6b0",
+      "chunk_660999ac8beb0abeddcf77b8c65216c4074858f63979d8a66830712df0c7859c"
+    ],
+    "chunk_relevance": {
+      "chunk_3a6dc08677006a4600ef6a9b8c49e1bd5b915581b73365b774d69a524563f3f9": 2,
+      "chunk_60e454d80cf03c03c89ebf1b5d7aa74e47c5c50e8430dc07d01b5fda5effa63c": 1,
+      "chunk_03bc9339b320b54d706ca43b51c994a8d156c2437019eec56e8ecdd1416ff6b0": 2,
+      "chunk_660999ac8beb0abeddcf77b8c65216c4074858f63979d8a66830712df0c7859c": 2
+    },
+    "difficulty": "cross_document"
+  },
+  {
+    "id": "q036",
+    "question": "How can Qdrant apply business signals after a hybrid retrieval stage?",
+    "reference_answer": "Fuse prefetched retriever results, then use a Formula Query to compose a final score from fused scores, payload fields, conditions, and optional decay terms, calibrated so business signals do not dominate unintentionally.",
+    "relevant_documents": [
+      "doc_9c43d9706c0c1cdeca2b66726c352e1c4c664b3524573835ff114d769fe1a982",
+      "doc_e0b54fd30a8994f981c5d01994cd97f3dcb6ab4d668c0726a607ee2a6bcd65d9"
+    ],
+    "relevant_chunks": [
+      "chunk_a7ed49b61fa12fd52b85a03f1fbc25e6de3bb6daba60e853c0edc5909a5bc4da",
+      "chunk_68fead02254360d99f7653254b8ad4865b2a5f2a88a56eed779ce1f3b88d4bec",
+      "chunk_660999ac8beb0abeddcf77b8c65216c4074858f63979d8a66830712df0c7859c",
+      "chunk_6d7706c757314b6b3748e0b8626fb8919385688cd9d5872c5b558f8b077e2b7c"
+    ],
+    "chunk_relevance": {
+      "chunk_a7ed49b61fa12fd52b85a03f1fbc25e6de3bb6daba60e853c0edc5909a5bc4da": 2,
+      "chunk_68fead02254360d99f7653254b8ad4865b2a5f2a88a56eed779ce1f3b88d4bec": 2,
+      "chunk_660999ac8beb0abeddcf77b8c65216c4074858f63979d8a66830712df0c7859c": 2,
+      "chunk_6d7706c757314b6b3748e0b8626fb8919385688cd9d5872c5b558f8b077e2b7c": 1
+    },
+    "difficulty": "cross_document"
+  },
+  {
+    "id": "q037",
+    "question": "What corpus guidance helps keep retrieval evaluation reproducible and avoids tuning bias?",
+    "reference_answer": "Use fixed query/relevance splits so parameters are tuned and measured on different data, retest when retrievers or corpora change, and use reproducible sampling rather than fresh random samples when constructing evaluation subsets.",
+    "relevant_documents": [
+      "doc_9c43d9706c0c1cdeca2b66726c352e1c4c664b3524573835ff114d769fe1a982",
+      "doc_3f18686b3efe2fa035065d587481604931b8a3da8ba0c41e1d56bf801231058d"
+    ],
+    "relevant_chunks": [
+      "chunk_2a106c2dfaf96b7f2e68d71f3125c76a6a3e0f3cbe501a36ad0c34fb654cd5e1",
+      "chunk_2d04fab5dc6136820f1389a9fca36d962bd7d97d40115917270aa10060c0cfaf",
+      "chunk_898688bf990e34cdc55f47c24c42ca0a948d72069a895f6ab9b13b0ff55631ae"
+    ],
+    "chunk_relevance": {
+      "chunk_2a106c2dfaf96b7f2e68d71f3125c76a6a3e0f3cbe501a36ad0c34fb654cd5e1": 2,
+      "chunk_2d04fab5dc6136820f1389a9fca36d962bd7d97d40115917270aa10060c0cfaf": 1,
+      "chunk_898688bf990e34cdc55f47c24c42ca0a948d72069a895f6ab9b13b0ff55631ae": 2
+    },
+    "difficulty": "cross_document"
+  },
+  {
+    "id": "q038",
+    "question": "How does rank or score fusion differ from candidate retrieve-and-rerank?",
+    "reference_answer": "Fusion combines rankings or normalized scores from multiple retrievers into one ordering, while retrieve-and-rerank uses a fast first-stage retriever to select candidates and a more accurate model to rescore those candidates.",
+    "relevant_documents": [
+      "doc_9c43d9706c0c1cdeca2b66726c352e1c4c664b3524573835ff114d769fe1a982",
+      "doc_222c62b30b8afbccb200e15c27755f8bdc8824ed40c5eaae8555358848f64c69"
+    ],
+    "relevant_chunks": [
+      "chunk_daae9d216ea721d25578ad69396dc72af20d7267122445f9bdbae428f05d3178",
+      "chunk_2d04fab5dc6136820f1389a9fca36d962bd7d97d40115917270aa10060c0cfaf",
+      "chunk_0747f054593e6ff29eae3d2a19fb6cf0583a927b697268ef68143f7abf346728",
+      "chunk_4ee9dba9bb33730e7f356d40e3da399bdac00a5b2006e46e251f2fd68c4b5f17",
+      "chunk_5d1888374f003ec75ae4929befb69aa3e999258614424b03ea635ad632144185"
+    ],
+    "chunk_relevance": {
+      "chunk_daae9d216ea721d25578ad69396dc72af20d7267122445f9bdbae428f05d3178": 2,
+      "chunk_2d04fab5dc6136820f1389a9fca36d962bd7d97d40115917270aa10060c0cfaf": 1,
+      "chunk_0747f054593e6ff29eae3d2a19fb6cf0583a927b697268ef68143f7abf346728": 1,
+      "chunk_4ee9dba9bb33730e7f356d40e3da399bdac00a5b2006e46e251f2fd68c4b5f17": 2,
+      "chunk_5d1888374f003ec75ae4929befb69aa3e999258614424b03ea635ad632144185": 1
+    },
+    "difficulty": "cross_document"
+  },
+  {
+    "id": "q039",
+    "question": "When would an application use a Transformers Pipeline directly instead of a Text Embeddings Inference server?",
+    "reference_answer": "Pipeline provides in-process task inference with configurable models and task parameters, while TEI is intended to deploy embedding or sequence-classification models behind a high-performance service API with batching and production observability.",
+    "relevant_documents": [
+      "doc_416c540cf133e4b620ffd26993838ac4fd5cbcf8219c196756bdf5f2765ed937",
+      "doc_804c8377e1908e9583942234825e7b5df1e3d0528aff172b36538e5a542bf6b0"
+    ],
+    "relevant_chunks": [
+      "chunk_64c08ef9caee05d1cd40f44ee39c612dd1e8c9398f90bce428cfd0cd4b2c662a",
+      "chunk_d1180e8d6ffd5cce2f77e63f9a9f9f1332b94b7582a8c9c029a86e012847ea45",
+      "chunk_88acf2e84e52b7fc08a9e4d8c192e58752cf204ff470b0e62090af7b9d041c5e",
+      "chunk_932fdb9a277cfdeff13cdb952d4e871597fa55623430b160efcb15548536c9a3"
+    ],
+    "chunk_relevance": {
+      "chunk_64c08ef9caee05d1cd40f44ee39c612dd1e8c9398f90bce428cfd0cd4b2c662a": 2,
+      "chunk_d1180e8d6ffd5cce2f77e63f9a9f9f1332b94b7582a8c9c029a86e012847ea45": 1,
+      "chunk_88acf2e84e52b7fc08a9e4d8c192e58752cf204ff470b0e62090af7b9d041c5e": 2,
+      "chunk_932fdb9a277cfdeff13cdb952d4e871597fa55623430b160efcb15548536c9a3": 1
+    },
+    "difficulty": "cross_document"
+  },
+  {
+    "id": "q040",
+    "question": "How do the Sentence Transformers and TEI documents characterize reranker models?",
+    "reference_answer": "Both describe rerankers as CrossEncoder or sequence-classification models that score a query together with candidate text; they improve candidate ordering but operate after a smaller candidate set has been retrieved.",
+    "relevant_documents": [
+      "doc_222c62b30b8afbccb200e15c27755f8bdc8824ed40c5eaae8555358848f64c69",
+      "doc_804c8377e1908e9583942234825e7b5df1e3d0528aff172b36538e5a542bf6b0",
+      "doc_da10badd8e53f12427e79c26045c803ee25ee0e4bc0cd79a88904bbd8e8ec593"
+    ],
+    "relevant_chunks": [
+      "chunk_4ee9dba9bb33730e7f356d40e3da399bdac00a5b2006e46e251f2fd68c4b5f17",
+      "chunk_664c8b82b3110def99b5d756e8e43359f9ac5c1d8e6e2ba669bc03944617bf62",
+      "chunk_f4d2887c85245189307680a3dc340510b9ff3096e825399fac5e4bd4e873d43a",
+      "chunk_4fb86452a7511b3fc9d93d27bb07c748a6377ba1f0dae6da3a4eb2af37009e06"
+    ],
+    "chunk_relevance": {
+      "chunk_4ee9dba9bb33730e7f356d40e3da399bdac00a5b2006e46e251f2fd68c4b5f17": 2,
+      "chunk_664c8b82b3110def99b5d756e8e43359f9ac5c1d8e6e2ba669bc03944617bf62": 2,
+      "chunk_f4d2887c85245189307680a3dc340510b9ff3096e825399fac5e4bd4e873d43a": 1,
+      "chunk_4fb86452a7511b3fc9d93d27bb07c748a6377ba1f0dae6da3a4eb2af37009e06": 1
+    },
+    "difficulty": "cross_document"
+  }
+]
