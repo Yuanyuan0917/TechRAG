@@ -11,6 +11,7 @@ from app.generation.citations import parse_citation_labels
 from app.generation.llm_client import (
     LLMConfigurationError,
     OpenAICompatibleLLMClient,
+    remove_trailing_special_tokens,
 )
 from app.generation.prompt_templates import (
     build_generation_messages,
@@ -206,3 +207,16 @@ def test_llm_client_sends_chat_request_and_returns_text(
         "temperature": 0.0,
     }
     assert captured["timeout"] == 12.0
+
+
+@pytest.mark.parametrize(
+    ("raw", "expected"),
+    [
+        ("Grounded answer.<|im_end|>", "Grounded answer."),
+        ("Grounded answer. <|endoftext|>  ", "Grounded answer."),
+        ("Grounded answer.<|im_end|><|im_end|>", "Grounded answer."),
+        ("Mention <|im_end|> inside the answer.", "Mention <|im_end|> inside the answer."),
+    ],
+)
+def test_remove_trailing_special_tokens(raw: str, expected: str) -> None:
+    assert remove_trailing_special_tokens(raw) == expected

@@ -1,0 +1,22 @@
+[
+  {
+    "id": "u001",
+    "question": "What is TechRAG's production uptime SLA?"
+  },
+  {
+    "id": "u002",
+    "question": "Which cloud region hosts TechRAG's production deployment?"
+  },
+  {
+    "id": "u003",
+    "question": "How much does TechRAG spend per month on production infrastructure?"
+  },
+  {
+    "id": "u004",
+    "question": "Who is the current chief executive officer of TechRAG?"
+  },
+  {
+    "id": "u005",
+    "question": "What customer support phone number does TechRAG provide?"
+  }
+]

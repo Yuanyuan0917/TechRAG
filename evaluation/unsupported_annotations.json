@@ -1,0 +1,7 @@
+[
+  {"question_id": "u001", "outcome": "abstained_correctly", "citations_emitted": false, "notes": "Explicit insufficient-context response; no SLA invented."},
+  {"question_id": "u002", "outcome": "abstained_correctly", "citations_emitted": false, "notes": "Explicit insufficient-context response; no cloud region invented."},
+  {"question_id": "u003", "outcome": "abstained_correctly", "citations_emitted": false, "notes": "Explicit insufficient-context response; no infrastructure cost invented."},
+  {"question_id": "u004", "outcome": "abstained_correctly", "citations_emitted": false, "notes": "Explicit insufficient-context response; no executive identity invented."},
+  {"question_id": "u005", "outcome": "abstained_correctly", "citations_emitted": false, "notes": "Explicit insufficient-context response; no support phone number invented."}
+]

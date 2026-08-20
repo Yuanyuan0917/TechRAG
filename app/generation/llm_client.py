@@ -12,6 +12,12 @@ from dotenv import load_dotenv
 
 from app.config import GENERATION_TEMPERATURE, LLM_BASE_URL, LLM_MODEL
 
+_TRAILING_SPECIAL_TOKENS = (
+    "<|im_end|>",
+    "<|endoftext|>",
+    "<|end_of_text|>",
+)
+
 
 class LLMConfigurationError(ValueError):
     """Raised when required LLM configuration is missing."""
@@ -19,6 +25,18 @@ class LLMConfigurationError(ValueError):
 
 class LLMRequestError(RuntimeError):
     """Raised when an LLM request fails or returns an invalid response."""
+
+
+def remove_trailing_special_tokens(text: str) -> str:
+    """Remove only recognized model control tokens at the end of a response."""
+    cleaned = text.rstrip()
+    while True:
+        for token in _TRAILING_SPECIAL_TOKENS:
+            if cleaned.endswith(token):
+                cleaned = cleaned[: -len(token)].rstrip()
+                break
+        else:
+            return cleaned
 
 
 class OpenAICompatibleLLMClient:
@@ -89,6 +107,9 @@ class OpenAICompatibleLLMClient:
             content = response_data["choices"][0]["message"]["content"]
         except (KeyError, IndexError, TypeError) as error:
             raise LLMRequestError("LLM response did not contain generated text") from error
-        if not isinstance(content, str) or not content.strip():
+        if not isinstance(content, str):
+            raise LLMRequestError("LLM response contained empty generated text")
+        content = remove_trailing_special_tokens(content)
+        if not content:
             raise LLMRequestError("LLM response contained empty generated text")
         return content.strip()

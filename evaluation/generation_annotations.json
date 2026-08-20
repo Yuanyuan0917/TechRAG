@@ -1,0 +1,202 @@
+{
+  "q001": {
+    "dense": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Matches the dependency-injection reference and cites the defining chunk.", "requires_human_review": false, "error_categories": []},
+    "hybrid": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Matches the reference with direct support from C2.", "requires_human_review": false, "error_categories": []},
+    "reranked": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Complete definition with the strongest relevant chunk ranked first.", "requires_human_review": false, "error_categories": []}
+  },
+  "q002": {
+    "dense": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Explains automatic callable analysis, execution, and injection with supporting chunks.", "requires_human_review": false, "error_categories": []},
+    "hybrid": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Captures execution and no-registration behavior with direct citations.", "requires_human_review": false, "error_categories": []},
+    "reranked": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 1, "citation_coverage": "partial", "notes": "Core answer is supported, but the final dependency-lifecycle statement is uncited.", "requires_human_review": false, "error_categories": ["missing citation"]}
+  },
+  "q003": {
+    "dense": {"answer_correctness": 0, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "not_applicable", "notes": "Incorrectly abstains; the exact OpenAPI chunk is absent from Dense top-5.", "requires_human_review": false, "error_categories": ["ranking failure", "incorrect abstention"]},
+    "hybrid": {"answer_correctness": 0, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "not_applicable", "notes": "Incorrectly abstains because Hybrid top-5 does not expose the needed OpenAPI passage.", "requires_human_review": false, "error_categories": ["ranking failure", "incorrect abstention"]},
+    "reranked": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Reranking surfaces the exact OpenAPI passage and the answer matches the reference.", "requires_human_review": false, "error_categories": []}
+  },
+  "q004": {
+    "dense": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Correct CPU, CUDA, MPS, and device-map guidance.", "requires_human_review": false, "error_categories": []},
+    "hybrid": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Correct device identifiers, directly supported by C1.", "requires_human_review": false, "error_categories": []},
+    "reranked": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Complete hardware assignment answer including Accelerate device mapping.", "requires_human_review": false, "error_categories": []}
+  },
+  "q005": {
+    "dense": {"answer_correctness": 1, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Correct OOM guidance but omits padding and throughput degradation.", "requires_human_review": false, "error_categories": ["incomplete synthesis"]},
+    "hybrid": {"answer_correctness": 0, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "not_applicable", "notes": "Incorrect abstention after the relevant batching chunk falls outside Hybrid top-5.", "requires_human_review": false, "error_categories": ["ranking failure", "incorrect abstention"]},
+    "reranked": {"answer_correctness": 1, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Relevant passage is cited, but padding and throughput effects remain omitted.", "requires_human_review": false, "error_categories": ["incomplete synthesis"]}
+  },
+  "q006": {
+    "dense": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Correctly identifies the model parameter and supplies the documented example.", "requires_human_review": false, "error_categories": []},
+    "hybrid": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Concise and fully supported model-override answer.", "requires_human_review": false, "error_categories": []},
+    "reranked": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Directly answers with the correctly ranked source passage.", "requires_human_review": false, "error_categories": []}
+  },
+  "q007": {
+    "dense": {"answer_correctness": 1, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Correctly identifies embedding serving but omits sequence classification and operational features.", "requires_human_review": false, "error_categories": ["incomplete synthesis"]},
+    "hybrid": {"answer_correctness": 1, "faithfulness": 1, "citation_correctness": 1, "citation_coverage": "complete", "notes": "Partially describes TEI but adds broad task and deployment claims weakly supported by the cited chunks.", "requires_human_review": false, "error_categories": ["context noise", "weak citation support", "unsupported generation claim"]},
+    "reranked": {"answer_correctness": 1, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Correct model families, but production batching and observability are omitted.", "requires_human_review": false, "error_categories": ["incomplete synthesis"]}
+  },
+  "q008": {
+    "dense": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Correct token-budget and hardware-utilization explanation.", "requires_human_review": false, "error_categories": []},
+    "hybrid": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Accurately explains the batch token budget and resource effect.", "requires_human_review": false, "error_categories": []},
+    "reranked": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 1, "citation_coverage": "complete", "notes": "Answer is correct; C1 supports it, while the additional C2 pooling citation is irrelevant.", "requires_human_review": false, "error_categories": ["weak citation support"]}
+  },
+  "q009": {
+    "dense": {"answer_correctness": 0, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "not_applicable", "notes": "Incorrect abstention because the air-gapped passage is absent from Dense top-5.", "requires_human_review": false, "error_categories": ["ranking failure", "incorrect abstention"]},
+    "hybrid": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Correct predownload, volume mount, and local model-path procedure.", "requires_human_review": false, "error_categories": []},
+    "reranked": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Fully supported air-gapped deployment answer.", "requires_human_review": false, "error_categories": []}
+  },
+  "q010": {
+    "dense": {"answer_correctness": 0, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "not_applicable", "notes": "Incorrect abstention; Match Any details are not in Dense top-5.", "requires_human_review": false, "error_categories": ["ranking failure", "incorrect abstention"]},
+    "hybrid": {"answer_correctness": 0, "faithfulness": 0, "citation_correctness": 0, "citation_coverage": "complete", "notes": "Reverses Match Any by answering with Match Except semantics and cites that misleading chunk.", "requires_human_review": false, "error_categories": ["ranking failure", "unsupported generation claim", "weak citation support"]},
+    "reranked": {"answer_correctness": 1, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Correct scalar OR behavior but omits matching any element of a stored array.", "requires_human_review": false, "error_categories": ["incomplete synthesis"]}
+  },
+  "q011": {
+    "dense": {"answer_correctness": 1, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Explains per-element evaluation but not the failure mode where different elements satisfy different conditions.", "requires_human_review": false, "error_categories": ["incomplete synthesis"]},
+    "hybrid": {"answer_correctness": 1, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Correct per-element scope, but the contrasting non-nested behavior is omitted.", "requires_human_review": false, "error_categories": ["incomplete synthesis"]},
+    "reranked": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "The top chunk exposes the cross-element problem and the answer explains individual-element scope.", "requires_human_review": false, "error_categories": []}
+  },
+  "q012": {
+    "dense": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Correct one-time normalization and fast dot-product comparison.", "requires_human_review": false, "error_categories": []},
+    "hybrid": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Complete and directly supported cosine optimization explanation.", "requires_human_review": false, "error_categories": []},
+    "reranked": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Complete and directly supported cosine optimization explanation.", "requires_human_review": false, "error_categories": []}
+  },
+  "q013": {
+    "dense": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Correctly explains exclusion of worse scores and metric-dependent direction.", "requires_human_review": false, "error_categories": []},
+    "hybrid": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Correct threshold behavior with sufficient adjacent context.", "requires_human_review": false, "error_categories": []},
+    "reranked": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Exact threshold passage is retrieved and cited.", "requires_human_review": false, "error_categories": []}
+  },
+  "q014": {
+    "dense": {"answer_correctness": 1, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Explains duplicate/skip instability but omits the expensive arbitrary-Nth-neighbor limitation.", "requires_human_review": false, "error_categories": ["incomplete synthesis"]},
+    "hybrid": {"answer_correctness": 1, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Correct instability symptoms but incomplete explanation of large-offset cost.", "requires_human_review": false, "error_categories": ["incomplete synthesis"]},
+    "reranked": {"answer_correctness": 1, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Correct duplicate/skip effect but omits the underlying offset retrieval limitation.", "requires_human_review": false, "error_categories": ["incomplete synthesis"]}
+  },
+  "q015": {
+    "dense": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Correctly explains summed reciprocal-rank contributions.", "requires_human_review": false, "error_categories": []},
+    "hybrid": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Correctly explains higher scores for repeated high ranks.", "requires_human_review": false, "error_categories": []},
+    "reranked": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Complete weighted RRF explanation supported by the cited formula.", "requires_human_review": false, "error_categories": []}
+  },
+  "q016": {
+    "dense": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Captures per-result-set distribution normalization and comparable summed scores.", "requires_human_review": false, "error_categories": []},
+    "hybrid": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Detailed DBSF normalization formula and summation are correct.", "requires_human_review": false, "error_categories": []},
+    "reranked": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Correct distribution-based mapping into a comparable range.", "requires_human_review": false, "error_categories": []}
+  },
+  "q017": {
+    "dense": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Directly contrasts learned meaning with literal matching.", "requires_human_review": false, "error_categories": []},
+    "hybrid": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Complete synonyms, abbreviations, and misspellings answer.", "requires_human_review": false, "error_categories": []},
+    "reranked": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Complete answer supported by both semantic and lexical passages.", "requires_human_review": false, "error_categories": []}
+  },
+  "q018": {
+    "dense": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Correct quality/latency trade-off and candidate narrowing.", "requires_human_review": false, "error_categories": []},
+    "hybrid": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Complete retrieve-then-rerank efficiency explanation.", "requires_human_review": false, "error_categories": []},
+    "reranked": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Complete and directly supported CrossEncoder trade-off.", "requires_human_review": false, "error_categories": []}
+  },
+  "q019": {
+    "dense": {"answer_correctness": 1, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Correct request-time execution and injection, but omits reused validation/documentation declarations.", "requires_human_review": false, "error_categories": ["incomplete synthesis"]},
+    "hybrid": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Covers declaration, execution, result retrieval, and injection with supported examples.", "requires_human_review": false, "error_categories": []},
+    "reranked": {"answer_correctness": 1, "faithfulness": 2, "citation_correctness": 1, "citation_coverage": "complete", "notes": "Core execution path is correct, but Depends and documentation reuse are omitted and C3 weakly supports the full claim.", "requires_human_review": false, "error_categories": ["incomplete synthesis", "weak citation support"]}
+  },
+  "q020": {
+    "dense": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 1, "citation_coverage": "complete", "notes": "Correct sync/async and OpenAPI answer; the citation labels are imperfectly associated with their claims.", "requires_human_review": false, "error_categories": ["weak citation support"]},
+    "hybrid": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Complete supported answer, with some extra but relevant dependency details.", "requires_human_review": false, "error_categories": []},
+    "reranked": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "The top chunk supports both cross-style execution and OpenAPI exposure.", "requires_human_review": false, "error_categories": []}
+  },
+  "q021": {
+    "dense": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Substantially complete benchmark, latency, CPU, sequence-length, and OOM guidance.", "requires_human_review": false, "error_categories": []},
+    "hybrid": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Complete practical batching decision checklist.", "requires_human_review": false, "error_categories": []},
+    "reranked": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Complete practical batching decision checklist.", "requires_human_review": false, "error_categories": []}
+  },
+  "q022": {
+    "dense": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Covers automatic device mapping and lower-precision/quantized memory reduction.", "requires_human_review": false, "error_categories": []},
+    "hybrid": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Complete hardware distribution and precision guidance.", "requires_human_review": false, "error_categories": []},
+    "reranked": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Complete device-map, precision, and quantization answer.", "requires_human_review": false, "error_categories": []}
+  },
+  "q023": {
+    "dense": {"answer_correctness": 0, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "not_applicable", "notes": "Incorrect abstention because TEI startup/request passages are absent from Dense top-5.", "requires_human_review": false, "error_categories": ["candidate generation failure", "incorrect abstention"]},
+    "hybrid": {"answer_correctness": 0, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Answers local SentenceTransformer usage instead of starting TEI and calling its embed endpoint.", "requires_human_review": true, "error_categories": ["context noise", "cross-document synthesis failure"]},
+    "reranked": {"answer_correctness": 1, "faithfulness": 1, "citation_correctness": 1, "citation_coverage": "partial", "notes": "Correct container setup but gives an incorrect port description and never supplies the required embed request.", "requires_human_review": true, "error_categories": ["incomplete synthesis", "unsupported generation claim", "missing citation"]}
+  },
+  "q024": {
+    "dense": {"answer_correctness": 0, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "not_applicable", "notes": "Incorrect abstention; Dense does not retrieve the TEI reranker endpoint passage.", "requires_human_review": false, "error_categories": ["ranking failure", "incorrect abstention"]},
+    "hybrid": {"answer_correctness": 1, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Correct deployment concept but the rerank request is truncated and omits the JSON payload.", "requires_human_review": false, "error_categories": ["context fragmentation", "incomplete synthesis"]},
+    "reranked": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Complete Docker launch and POST /rerank example with query and texts.", "requires_human_review": false, "error_categories": []}
+  },
+  "q025": {
+    "dense": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 1, "citation_coverage": "partial", "notes": "Clause semantics are correct, but one cited chunk does not cleanly support all clauses and nesting is uncited.", "requires_human_review": false, "error_categories": ["weak citation support", "missing citation"]},
+    "hybrid": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Each clause is correctly described and tied to its supporting chunk.", "requires_human_review": false, "error_categories": []},
+    "reranked": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 1, "citation_coverage": "partial", "notes": "Clause descriptions are correct, but the combined/nested conclusion is uncited and must has weak label support.", "requires_human_review": false, "error_categories": ["weak citation support", "missing citation"]}
+  },
+  "q026": {
+    "dense": {"answer_correctness": 1, "faithfulness": 2, "citation_correctness": 0, "citation_coverage": "complete", "notes": "Explains element-level matching but omits dot/array notation; the emitted citation points to a slicing chunk rather than nested filtering.", "requires_human_review": true, "error_categories": ["incomplete synthesis", "weak citation support"]},
+    "hybrid": {"answer_correctness": 2, "faithfulness": 1, "citation_correctness": 1, "citation_coverage": "complete", "notes": "Substantially answers notation and per-element scope, but the dot-notation citation source is weak and the same-element guarantee is implicit.", "requires_human_review": true, "error_categories": ["weak citation support"]},
+    "reranked": {"answer_correctness": 1, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Correct same-element nested logic but omits dot notation and [] projection.", "requires_human_review": false, "error_categories": ["incomplete synthesis"]}
+  },
+  "q027": {
+    "dense": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Complete two-collection, group_by, and with_lookup design.", "requires_human_review": false, "error_categories": []},
+    "hybrid": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Complete design and query-time metadata attachment.", "requires_human_review": false, "error_categories": []},
+    "reranked": {"answer_correctness": 1, "faithfulness": 1, "citation_correctness": 1, "citation_coverage": "complete", "notes": "Mostly correct but places the document_id payload index on the documents collection rather than the chunk points being grouped.", "requires_human_review": true, "error_categories": ["unsupported generation claim", "weak citation support"]}
+  },
+  "q028": {
+    "dense": {"answer_correctness": 1, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Explains prefetch then main-query refinement but omits cheaper representations and prefetch limit requirements.", "requires_human_review": false, "error_categories": ["incomplete synthesis"]},
+    "hybrid": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Complete coarse-to-fine and limit-plus-offset explanation.", "requires_human_review": false, "error_categories": []},
+    "reranked": {"answer_correctness": 1, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Correct coarse-to-fine flow but omits required candidate-limit sizing.", "requires_human_review": false, "error_categories": ["incomplete synthesis"]}
+  },
+  "q029": {
+    "dense": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Correct symmetric/asymmetric roles and encode_query/encode_document guidance.", "requires_human_review": false, "error_categories": []},
+    "hybrid": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Complete role-sensitive encoding explanation.", "requires_human_review": false, "error_categories": []},
+    "reranked": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Complete and directly supported encoding distinction.", "requires_human_review": false, "error_categories": []}
+  },
+  "q030": {
+    "dense": {"answer_correctness": 0, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Answers lexical versus dense retrieval rather than the documented scaling options.", "requires_human_review": false, "error_categories": ["ranking failure", "incomplete synthesis"]},
+    "hybrid": {"answer_correctness": 0, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Also answers retrieval-method choice instead of semantic_search, GPU placement, and ANN systems.", "requires_human_review": false, "error_categories": ["ranking failure", "incomplete synthesis"]},
+    "reranked": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Correctly identifies optimized semantic_search/GPU placement and ANN scaling.", "requires_human_review": false, "error_categories": []}
+  },
+  "q031": {
+    "dense": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Complete learned-vector versus literal-match explanation.", "requires_human_review": false, "error_categories": []},
+    "hybrid": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Complete learned-vector versus literal-match explanation.", "requires_human_review": false, "error_categories": []},
+    "reranked": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Complete answer supported by both documents.", "requires_human_review": false, "error_categories": []}
+  },
+  "q032": {
+    "dense": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Complete efficient candidate retrieval and slower pairwise reranking flow.", "requires_human_review": false, "error_categories": []},
+    "hybrid": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Complete efficient candidate retrieval and slower pairwise reranking flow.", "requires_human_review": false, "error_categories": []},
+    "reranked": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Complete two-stage explanation with supported efficiency trade-off.", "requires_human_review": false, "error_categories": []}
+  },
+  "q033": {
+    "dense": {"answer_correctness": 0, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "not_applicable", "notes": "Incorrect abstention; Dense retrieves only local SentenceTransformer material.", "requires_human_review": false, "error_categories": ["candidate generation failure", "incorrect abstention"]},
+    "hybrid": {"answer_correctness": 1, "faithfulness": 1, "citation_correctness": 1, "citation_coverage": "partial", "notes": "Provides a high-level local-versus-service distinction but omits encode arrays, /embed, batching, and adds unsupported scale claims.", "requires_human_review": true, "error_categories": ["cross-document synthesis failure", "unsupported generation claim", "missing citation"]},
+    "reranked": {"answer_correctness": 0, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "not_applicable", "notes": "Incorrectly abstains despite receiving multiple TEI chunks; the complementary local SentenceTransformer passage is absent from top-5.", "requires_human_review": true, "error_categories": ["candidate generation failure", "cross-document synthesis failure", "incorrect abstention"]}
+  },
+  "q034": {
+    "dense": {"answer_correctness": 0, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "not_applicable", "notes": "Incorrect abstention because Dense top-5 lacks enough Qdrant cosine detail for synthesis.", "requires_human_review": false, "error_categories": ["candidate generation failure", "incorrect abstention"]},
+    "hybrid": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Correct embedding generation, cosine normalization, and nearest-neighbor search synthesis.", "requires_human_review": false, "error_categories": []},
+    "reranked": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Complete cross-document path from SentenceTransformer encoding through Qdrant search.", "requires_human_review": false, "error_categories": []}
+  },
+  "q035": {
+    "dense": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Correct include/exclude filtering versus post-retrieval score adjustment.", "requires_human_review": false, "error_categories": []},
+    "hybrid": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Correct constraint versus ranking distinction.", "requires_human_review": false, "error_categories": []},
+    "reranked": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Correct constraint versus business-aware score adjustment distinction.", "requires_human_review": false, "error_categories": []}
+  },
+  "q036": {
+    "dense": {"answer_correctness": 0, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Answers filtering rather than Formula Query scoring after fusion; the needed passage is outside candidates.", "requires_human_review": true, "error_categories": ["candidate generation failure", "cross-document synthesis failure"]},
+    "hybrid": {"answer_correctness": 0, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Discusses prefetch, filtering, and relevance feedback but not formula-based score composition or decay calibration.", "requires_human_review": true, "error_categories": ["candidate generation failure", "context noise", "cross-document synthesis failure"]},
+    "reranked": {"answer_correctness": 0, "faithfulness": 1, "citation_correctness": 1, "citation_coverage": "complete", "notes": "Invents a score parameter and remains unable to answer because the relevant Formula Query chunks are absent from the fixed candidate set.", "requires_human_review": true, "error_categories": ["candidate generation failure", "unsupported generation claim", "weak citation support"]}
+  },
+  "q037": {
+    "dense": {"answer_correctness": 0, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "not_applicable", "notes": "Incorrect abstention; corpus-evaluation guidance is absent from Dense top-5.", "requires_human_review": true, "error_categories": ["candidate generation failure", "incorrect abstention"]},
+    "hybrid": {"answer_correctness": 0, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "not_applicable", "notes": "Incorrect abstention; Hybrid top-5 lacks the fixed-split and reproducible-sampling guidance.", "requires_human_review": true, "error_categories": ["candidate generation failure", "incorrect abstention"]},
+    "reranked": {"answer_correctness": 0, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "not_applicable", "notes": "Incorrect abstention; candidate retrieval fails before reranking can expose the required passages.", "requires_human_review": true, "error_categories": ["candidate generation failure", "incorrect abstention"]}
+  },
+  "q038": {
+    "dense": {"answer_correctness": 2, "faithfulness": 1, "citation_correctness": 1, "citation_coverage": "complete", "notes": "Correct comparison, but top-5 mainly supports fusion and only weakly supports the retrieve-and-rerank half.", "requires_human_review": true, "error_categories": ["weak citation support", "context noise"]},
+    "hybrid": {"answer_correctness": 2, "faithfulness": 1, "citation_correctness": 1, "citation_coverage": "complete", "notes": "Correct concise distinction, but the sole citation only partially establishes the two-stage reranker behavior.", "requires_human_review": true, "error_categories": ["weak citation support"]},
+    "reranked": {"answer_correctness": 2, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Both fusion and candidate reranking are represented in the supplied contexts.", "requires_human_review": false, "error_categories": []}
+  },
+  "q039": {
+    "dense": {"answer_correctness": 1, "faithfulness": 1, "citation_correctness": 0, "citation_coverage": "partial", "notes": "Plausible Pipeline use cases, but TEI comparison is incomplete and C1 does not support the hardware/control claims attached to it.", "requires_human_review": true, "error_categories": ["cross-document synthesis failure", "unsupported generation claim", "weak citation support", "missing citation"]},
+    "hybrid": {"answer_correctness": 1, "faithfulness": 1, "citation_correctness": 1, "citation_coverage": "complete", "notes": "Pipeline capabilities are partly supported, but the answer omits TEI service/batching/observability and adds an unsupported infrastructure claim.", "requires_human_review": true, "error_categories": ["cross-document synthesis failure", "unsupported generation claim", "weak citation support"]},
+    "reranked": {"answer_correctness": 1, "faithfulness": 1, "citation_correctness": 1, "citation_coverage": "complete", "notes": "Pipeline details are supported, but comparative claims about lightweight setup, workflow overhead, and when to prefer it are weakly grounded; TEI context is not cited.", "requires_human_review": true, "error_categories": ["cross-document synthesis failure", "unsupported generation claim", "weak citation support"]}
+  },
+  "q040": {
+    "dense": {"answer_correctness": 0, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "not_applicable", "notes": "Incorrect abstention because Dense top-5 contains only the Sentence Transformers side and lacks TEI reranker content.", "requires_human_review": true, "error_categories": ["candidate generation failure", "incorrect abstention"]},
+    "hybrid": {"answer_correctness": 1, "faithfulness": 1, "citation_correctness": 1, "citation_coverage": "complete", "notes": "Mentions CrossEncoders and second-stage scoring but does not synthesize TEI sequence classification, and the cited overview chunks only weakly support the claims.", "requires_human_review": true, "error_categories": ["cross-document synthesis failure", "weak citation support"]},
+    "reranked": {"answer_correctness": 1, "faithfulness": 2, "citation_correctness": 2, "citation_coverage": "complete", "notes": "Accurately describes Sentence Transformers rerankers but omits the TEI sequence-classification characterization.", "requires_human_review": true, "error_categories": ["candidate generation failure", "cross-document synthesis failure", "incomplete synthesis"]}
+  }
+}
