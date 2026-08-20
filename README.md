@@ -4,7 +4,13 @@ An evaluated RAG system for technical documentation.
 
 **Status:** Early development
 
-Ingestion currently supports Markdown, text-based PDFs, and fixed-size character chunking with overlap.
+The current baseline supports:
+
+```text
+Markdown / text-based PDF → deterministic chunking → local embeddings → Qdrant indexing → dense retrieval
+```
+
+LLM answer generation, hybrid retrieval, and evaluation are not implemented yet.
 
 The intended pipeline is:
 

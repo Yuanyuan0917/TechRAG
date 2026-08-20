@@ -12,6 +12,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from app.ingestion.chunker import chunk_document
 from app.ingestion.parser import parse_document
+from app.config import QDRANT_COLLECTION_NAME
 
 SUPPORTED_EXTENSIONS = {".md", ".pdf"}
 
@@ -39,6 +40,16 @@ def _argument_parser() -> argparse.ArgumentParser:
     parser.add_argument("path", type=Path, help="A document or non-recursive directory")
     parser.add_argument("--chunk-size", type=int, default=1000)
     parser.add_argument("--chunk-overlap", type=int, default=200)
+    parser.add_argument(
+        "--index",
+        action="store_true",
+        help="Embed chunks and upsert them into local Qdrant",
+    )
+    parser.add_argument(
+        "--reset-index",
+        action="store_true",
+        help="Explicitly replace the Qdrant collection before indexing",
+    )
     return parser
 
 
@@ -46,10 +57,13 @@ def main() -> int:
     """Parse command-line input and print ingestion summaries."""
     argument_parser = _argument_parser()
     args = argument_parser.parse_args()
+    if args.reset_index and not args.index:
+        argument_parser.error("--reset-index requires --index")
 
     try:
         files = _input_files(args.path)
         total_chunks = 0
+        all_chunks = []
         for path in files:
             document = parse_document(path)
             chunks = chunk_document(
@@ -58,6 +72,7 @@ def main() -> int:
                 chunk_overlap=args.chunk_overlap,
             )
             total_chunks += len(chunks)
+            all_chunks.extend(chunks)
             print(f"Loaded: {path.name}")
             print(f"Document ID: {document.id}")
             print(f"Characters: {len(document.text)}")
@@ -65,6 +80,25 @@ def main() -> int:
 
         print(f"Documents: {len(files)}")
         print(f"Chunks: {total_chunks}")
+
+        if args.index:
+            from app.retrieval.embedder import SentenceTransformerEmbedder
+            from app.retrieval.vector_store import QdrantVectorStore
+
+            embedder = SentenceTransformerEmbedder()
+            vector_store = QdrantVectorStore()
+            try:
+                vector_store.initialize_collection(
+                    embedder.vector_size,
+                    reset=args.reset_index,
+                )
+                vectors = embedder.embed_texts([chunk.text for chunk in all_chunks])
+                indexed = vector_store.upsert(all_chunks, vectors)
+            finally:
+                vector_store.close()
+
+            print(f"Indexed: {indexed}")
+            print(f"Collection: {QDRANT_COLLECTION_NAME}")
     except (OSError, ValueError) as error:
         argument_parser.error(str(error))
 
