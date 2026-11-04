@@ -1,0 +1,6 @@
+# Linux CI: reuse both container runtimes; MLX-LM stays outside Ubuntu CI.
+-r docker/requirements-api.txt
+-r docker/requirements-frontend.txt
+pytest==8.4.2
+pytest-socket==0.7.0
+pyyaml==6.0.3

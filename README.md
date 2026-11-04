@@ -220,3 +220,40 @@ and direct runtime dependencies are pinned; transitive dependencies are not a
 complete lockfile. Linux CPU results/timings are not asserted to reproduce the
 frozen native evaluation. The default host connectivity targets Docker Desktop
 on macOS; other Docker installations may require a different host-service URL.
+
+## Continuous Integration
+
+[The test workflow](.github/workflows/test.yml) runs on pull requests targeting
+`main` and pushes to `main`, using Ubuntu 24.04 and Python 3.11. It runs the full
+pytest suite, Python compilation, dependency consistency and whitespace checks,
+workflow YAML parsing, and Docker Compose configuration validation. It does not
+start containers or perform deployment.
+
+CI installs CPU PyTorch and `requirements-ci.txt`, which reuses the API/frontend
+Linux dependency manifests and adds test tools. MLX-LM is excluded because it
+runs on the macOS host. Tests use fake embedding/reranking models, fake LLM
+clients, temporary Qdrant storage, and generated document fixtures. No real API
+keys, corpus, persistent database, GPU, or model weights are required. Hugging
+Face offline mode and pytest socket blocking prevent accidental model/network
+access; Unix sockets remain allowed for in-process async API tests.
+
+The workflow has read-only repository permissions, pins actions to commit SHAs,
+and caches pip packages keyed by the dependency manifests/workflow. It does not
+cache model weights, `.env`, or Qdrant data. Installing dependencies still needs
+network access; real inference remains a separate local smoke test.
+
+To reproduce the checks on Linux with Python 3.11 and Docker Compose installed:
+
+```bash
+python3.11 -m venv .venv-ci
+source .venv-ci/bin/activate
+python -m pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cpu
+python -m pip install -r requirements-ci.txt
+HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 LLM_API_KEY= QDRANT_URL= \
+  python -m pytest --disable-socket --allow-unix-socket
+python -m compileall -q app scripts frontend tests
+python -m pip check
+git diff --check
+python -c "from pathlib import Path; import yaml; yaml.safe_load(Path('.github/workflows/test.yml').read_text())"
+docker compose --env-file .env.example config --quiet
+```
