@@ -29,7 +29,7 @@ Install dependencies and configure the local environment once:
 ```bash
 source .venv/bin/activate
 python -m pip install -r requirements.txt
-cp .env.example .env
+cp -n .env.example .env
 ```
 
 For local MLX-LM, set `LLM_API_KEY` in `.env` to a non-empty local-only value
@@ -68,6 +68,24 @@ streamlit run frontend/streamlit_app.py
 Open `http://localhost:8501`. The first query can be slower while local models
 load. Retrieval-only mode works without Qwen/MLX-LM; answer generation requires
 the Qwen server.
+
+The API exposes `GET /health` for lightweight process health and `POST /query`
+for queries. `/health` does not check model or index readiness. Query requests
+accept `dense`, `hybrid`, or `reranked` (default), with `top_k` from 1 to 10
+(default 5). Set `generate_answer` to `false` for retrieval-only responses with
+`answer: null` and empty citations. Missing LLM configuration or an unavailable
+LLM service produces HTTP 503 with `generation_unavailable`; retrieval/index
+failures produce HTTP 503 with `retrieval_unavailable`. Input validation failures
+return HTTP 422.
+
+This demo is intended for local use on macOS with Apple Silicon and has no
+authentication. Run one API process: local Qdrant requires exclusive access, and
+pipeline requests execute serially on one worker thread. Stop the API before
+running indexing or evaluation commands that open the same Qdrant directory.
+An existing index is required; if needed, run
+`python scripts/ingest.py data/raw/ --index` before starting the API.
+Reported `latency_ms` measures pipeline execution, including lazy initialization,
+but excludes executor queue time and HTTP transport. It is not production latency.
 
 The frontend reads `TECHRAG_API_URL`, defaulting to
 `http://127.0.0.1:8000`. A direct API request is:

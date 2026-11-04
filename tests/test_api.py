@@ -199,3 +199,28 @@ def test_retrieval_only_does_not_initialize_llm() -> None:
 
     assert response.status_code == 200
     assert response.json()["answer"] is None
+
+
+@pytest.mark.parametrize("generate_answer", [False, True])
+def test_retrieval_failure_returns_503_in_both_modes(generate_answer: bool) -> None:
+    class UnavailableRetriever:
+        def retrieve(self, query: str, top_k: int = 5) -> list[Any]:
+            raise OSError("Cannot read /private/local/qdrant/index")
+
+    service = TechRAGService(
+        retrievers={"dense": UnavailableRetriever()},
+        llm_client_factory=FakeLLMClient,
+    )
+    with TestClient(create_app(service)) as client:
+        response = client.post(
+            "/query",
+            json={
+                "question": "Find the relevant documentation.",
+                "strategy": "dense",
+                "generate_answer": generate_answer,
+            },
+        )
+
+    assert response.status_code == 503
+    assert response.json()["detail"]["code"] == "retrieval_unavailable"
+    assert "/private/" not in response.text

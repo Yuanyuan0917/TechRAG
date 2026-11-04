@@ -48,6 +48,21 @@ class GenerationExecutionError(RuntimeError):
     """Raised when generation fails outside expected LLM availability errors."""
 
 
+class _GuardedRetriever:
+    """Preserve retrieval errors across the existing generation pipeline boundary."""
+
+    def __init__(self, retriever: Any) -> None:
+        self._retriever = retriever
+
+    def retrieve(self, query: str, top_k: int = 5) -> list[Any]:
+        try:
+            return self._retriever.retrieve(query, top_k=top_k)
+        except Exception as error:
+            raise RetrievalUnavailableError(
+                "Retrieval failed. Verify the local Qdrant index."
+            ) from error
+
+
 def _preview(text: str, limit: int = PREVIEW_CHARACTERS) -> str:
     """Return a compact, single-line display preview."""
     compact = " ".join(text.split())
@@ -154,7 +169,7 @@ class TechRAGService:
     def query(self, query_request: QueryRequest) -> QueryResponse:
         """Execute one retrieval or generation request and serialize its provenance."""
         started = time.perf_counter()
-        retriever = self._get_retriever(query_request.strategy)
+        retriever = _GuardedRetriever(self._get_retriever(query_request.strategy))
 
         if query_request.generate_answer:
             try:
@@ -163,7 +178,7 @@ class TechRAGService:
                     self._get_llm_client(),
                     context_top_k=query_request.top_k,
                 ).answer(query_request.question)
-            except (LLMConfigurationError, LLMRequestError):
+            except (RetrievalUnavailableError, LLMConfigurationError, LLMRequestError):
                 raise
             except Exception as error:
                 raise GenerationExecutionError(
@@ -173,15 +188,10 @@ class TechRAGService:
             answer = generated.answer
             invalid_labels = list(generated.invalid_citation_labels)
         else:
-            try:
-                results = retriever.retrieve(
-                    query_request.question,
-                    top_k=query_request.top_k,
-                )
-            except Exception as error:
-                raise RetrievalUnavailableError(
-                    "Retrieval failed. Verify the local Qdrant index."
-                ) from error
+            results = retriever.retrieve(
+                query_request.question,
+                top_k=query_request.top_k,
+            )
             answer = None
             invalid_labels = []
 
