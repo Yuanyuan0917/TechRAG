@@ -51,7 +51,9 @@ jobs:
 
       - name: Run full test suite without network access
         # Unix sockets are needed by asyncio/TestClient; IP sockets stay blocked.
-        run: python -m pytest --disable-socket --allow-unix-socket
+        run: >-
+          python -m pytest --disable-socket --allow-unix-socket
+          --cov=app --cov-report=term-missing --cov-report=xml:coverage.xml
 
       - name: Compile Python sources
         run: python -m compileall -q app scripts frontend tests
@@ -65,10 +67,20 @@ jobs:
           fi
           git diff --check
 
-      - name: Check workflow YAML syntax
+      - name: Check YAML syntax
         run: |
-          python -c "from pathlib import Path; import yaml; yaml.safe_load(Path('.github/workflows/test.yml').read_text())"
+          python -c "from pathlib import Path; import yaml; [yaml.safe_load(Path(path).read_text()) for path in ('.github/workflows/test.yml', 'codecov.yml')]"
 
       - name: Validate Docker Compose configuration
         # Use checked-in, non-secret defaults; do not start services or index data.
         run: docker compose --env-file .env.example config --quiet
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+          disable_search: true
+          cleanup: true
+          # External reporting is non-blocking; test/check failures still fail CI.
+          fail_ci_if_error: false

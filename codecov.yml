@@ -1,0 +1,17 @@
+# Report coverage without enforcing a minimum percentage or blocking merges.
+coverage:
+  status:
+    project:
+      default:
+        informational: true
+    patch:
+      default:
+        informational: true
+
+comment:
+  layout: "header,diff,files,footer"
+  behavior: default
+  require_changes: false
+  require_base: false
+  require_head: true
+  hide_project_coverage: false

@@ -250,10 +250,38 @@ source .venv-ci/bin/activate
 python -m pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cpu
 python -m pip install -r requirements-ci.txt
 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 LLM_API_KEY= QDRANT_URL= \
-  python -m pytest --disable-socket --allow-unix-socket
+  python -m pytest --disable-socket --allow-unix-socket \
+  --cov=app --cov-report=term-missing --cov-report=xml:coverage.xml
 python -m compileall -q app scripts frontend tests
 python -m pip check
 git diff --check
-python -c "from pathlib import Path; import yaml; yaml.safe_load(Path('.github/workflows/test.yml').read_text())"
+python -c "from pathlib import Path; import yaml; [yaml.safe_load(Path(path).read_text()) for path in ('.github/workflows/test.yml', 'codecov.yml')]"
 docker compose --env-file .env.example config --quiet
 ```
+
+### Coverage and Codecov
+
+CI collects coverage for `app/` with `pytest-cov`, writes Cobertura-compatible
+`coverage.xml`, and uploads only that report through the SHA-pinned official
+Codecov action after the existing checks pass. `.coverage`, `coverage.xml`, and
+HTML coverage output are already ignored by Git. [codecov.yml](codecov.yml)
+enables an updating PR comment with project, patch, and changed-file coverage;
+coverage checks are informational and no minimum percentage is enforced.
+Codecov upload errors produce warnings without failing the existing CI job.
+
+Manual setup: sign in to [Codecov](https://app.codecov.io/gh/Yuanyuan0917/TechRAG),
+activate this repository, and install/authorize the
+[Codecov GitHub App](https://github.com/apps/codecov) for TechRAG so it can post
+PR comments/checks. Add the repository upload token from Codecov as the GitHub
+Actions repository secret `CODECOV_TOKEN` under Settings → Secrets and variables
+→ Actions. Do not put it in source files or `.env.example`. The workflow retains
+read-only GitHub token permissions; the Codecov App provides comment access.
+
+After publishing these changes, verify an upload on `main` to establish the base
+report, then check a PR targeting `main` for the Codecov comment. Initial PRs can
+show head coverage without a base, but comparisons need both reports. Fork PRs
+do not receive repository secrets: coverage still runs, while upload requires
+Codecov's supported public-repository tokenless-upload setting; otherwise it
+warns and no new Codecov report is available. See
+[Codecov setup](https://docs.codecov.com/docs/github-2-getting-a-codecov-account-and-uploading-coverage)
+and [PR comment configuration](https://docs.codecov.com/docs/pull-request-comments).

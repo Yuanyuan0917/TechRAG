@@ -2,5 +2,6 @@
 -r docker/requirements-api.txt
 -r docker/requirements-frontend.txt
 pytest==8.4.2
+pytest-cov==7.1.0
 pytest-socket==0.7.0
 pyyaml==6.0.3
