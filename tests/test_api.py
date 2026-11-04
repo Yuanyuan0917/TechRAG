@@ -224,3 +224,39 @@ def test_retrieval_failure_returns_503_in_both_modes(generate_answer: bool) -> N
     assert response.status_code == 503
     assert response.json()["detail"]["code"] == "retrieval_unavailable"
     assert "/private/" not in response.text
+
+
+@pytest.mark.parametrize("index_state", ["missing", "wrong_count", "wrong_ids"])
+def test_api_rejects_uninitialized_or_mismatched_index(
+    index_state: str,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    closed: list[bool] = []
+
+    class FakeStore:
+        def collection_exists(self) -> bool:
+            return index_state != "missing"
+
+        def count(self) -> int:
+            return 0 if index_state == "wrong_count" else 1
+
+        def chunk_ids(self) -> frozenset[str]:
+            return frozenset({"chunk_from_another_runtime_path"})
+
+        def close(self) -> None:
+            closed.append(True)
+
+    monkeypatch.setattr("app.api.routes_query.QdrantVectorStore", FakeStore)
+    monkeypatch.setattr(
+        "app.api.routes_query.build_corpus_inventory",
+        lambda _: ({}, {"expected_chunk_id": object()}),
+    )
+    with TestClient(create_app()) as client:
+        response = client.post(
+            "/query",
+            json={"question": "Find documentation", "generate_answer": False},
+        )
+
+    assert response.status_code == 503
+    assert response.json()["detail"]["code"] == "retrieval_unavailable"
+    assert closed == [True]

@@ -1,0 +1,20 @@
+# Allow only runtime source and dependency manifests into the build context.
+**
+!Dockerfile
+!.dockerignore
+!docker/
+!docker/requirements-*.txt
+!app/
+!app/**
+!scripts/
+!scripts/ingest.py
+!frontend/
+!frontend/**
+
+**/__pycache__/
+**/*.py[cod]
+**/.env*
+**/.cache/
+**/*.safetensors
+**/*.gguf
+**/*.bin

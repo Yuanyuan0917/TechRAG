@@ -100,3 +100,123 @@ curl -X POST http://127.0.0.1:8000/query \
     "top_k": 5
   }'
 ```
+
+## Docker Compose Demo
+
+Prerequisites: Docker Desktop for Mac running with Compose v2 or later, the
+repository's corpus present under `data/raw/`, and internet access on the first
+image build and model download. Linux containers use Python 3.11 and CPU
+embeddings/reranking; MLX-LM stays on the Apple Silicon host. Runtime dependencies
+are pinned separately under `docker/`; the native `requirements.txt` is unchanged.
+
+Compose runs `frontend → api → qdrant` on its private network. Only the API
+(`127.0.0.1:8000`) and UI (`127.0.0.1:8501`) are published to the host. The
+frontend uses `http://api:8000`, and the API uses `QDRANT_URL=http://qdrant:6333`.
+Native use still defaults to embedded Qdrant when `QDRANT_URL` is unset.
+To select a server for native commands, export `QDRANT_URL` before startup;
+Compose supplies it directly to the API container. An explicit local database
+path in Python callers takes precedence over the environment URL default.
+
+### Build and initialize retrieval data
+
+Run from the repository root:
+
+```bash
+docker compose config --quiet
+docker compose build
+docker compose up -d --wait qdrant
+docker compose run --rm api python scripts/ingest.py data/raw/ --index
+docker compose up -d --wait
+```
+
+Open `http://localhost:8501`, or check the API with
+`curl http://127.0.0.1:8000/health`. Qdrant, API, and frontend have health checks;
+API health is process health and does not mean the corpus has been indexed.
+An empty Qdrant service alone cannot answer retrieval requests: until indexing
+completes, `/query` returns structured HTTP 503 `retrieval_unavailable`.
+
+`data/raw/` is mounted read-only at `/app/data/raw` for both indexing and API
+containers. Indexing uses the existing parser, 1000/200 character chunking,
+MiniLM embeddings, and deterministic upserts. BM25 is rebuilt in memory from
+that same mounted corpus on API initialization. No corpus or evaluation dataset
+is copied into either image. Models download only at runtime into a shared
+`huggingface_cache` named volume; the first indexing/reranked query is slower.
+
+The Qdrant server stores its collection in the `qdrant_storage` named volume,
+separate from the native `data/qdrant/` embedded database. Subsequent starts reuse
+the volume; indexing is not repeated automatically. Repeating the indexing
+command on an unchanged corpus upserts the same points without duplicates.
+
+Document IDs currently include normalized source paths, so a host-built index
+cannot simply be copied into this container workflow. Index inside Compose to
+keep dense and BM25 IDs consistent. The API checks both count and chunk IDs and
+returns HTTP 503 on a mismatch. Frozen evaluation datasets/results retain their
+original host IDs and are not regenerated for this demo. Existing Compose data
+can be restored by reattaching the same named volume with the same corpus and
+container path. For a fresh volume, rebuild with the indexing command above.
+
+If corpus files are added, removed, or replaced, stop the API, explicitly rebuild
+the demo collection, and restart the API to refresh its in-memory BM25 index:
+
+```bash
+docker compose stop api frontend
+docker compose run --rm api python scripts/ingest.py data/raw/ --index --reset-index
+docker compose up -d --wait
+```
+
+`--reset-index` deletes and recreates the configured **demo collection**. Use it
+only when intentionally rebuilding; normal startup never resets stored data.
+
+### Host MLX-LM and configuration
+
+Retrieval-only mode works with MLX-LM stopped. For generated answers, start the
+host server in a separate terminal, bound only to localhost:
+
+```bash
+source .venv/bin/activate
+mlx_lm.server \
+  --model Qwen/Qwen3-8B-MLX-4bit \
+  --host 127.0.0.1 \
+  --port 8080 \
+  --chat-template-args '{"enable_thinking":false}'
+```
+
+The API defaults to `http://host.docker.internal:8080/v1`, Docker Desktop's
+[host-service address](https://docs.docker.com/desktop/features/networking/networking-how-tos/).
+The localhost binding worked through Docker Desktop during the smoke test and
+keeps the unauthenticated model service off the LAN. macOS firewall settings
+must permit Docker Desktop's connection.
+If MLX-LM is unavailable, generation requests return HTTP 503
+`generation_unavailable` and retrieval-only requests remain available.
+
+Compose reads these optional variables from the shell or root `.env` at runtime:
+
+| Variable | Compose default |
+| --- | --- |
+| `TECHRAG_DOCKER_LLM_BASE_URL` | `http://host.docker.internal:8080/v1` |
+| `LLM_MODEL` | `Qwen/Qwen3-8B-MLX-4bit` |
+| `LLM_API_KEY` | `local-mlx` (local compatibility header) |
+| `TECHRAG_API_PORT` | `8000` |
+| `TECHRAG_UI_PORT` | `8501` |
+
+The Docker-specific LLM URL avoids accidentally using native
+`LLM_BASE_URL=http://127.0.0.1:8080/v1` inside the container. `.env` is never
+copied into an image, and the frontend receives no LLM credentials. The existing
+API request example above works with the Compose stack unchanged.
+
+### Stop and limitations
+
+```bash
+docker compose down
+```
+
+This stops/removes service containers and the network while retaining Qdrant
+and Hugging Face volumes. Do not add `--volumes` if you want to keep that data.
+Images, caches, and named volumes consume Docker Desktop disk space.
+
+This is a local demo with one API worker, no authentication/TLS, no automatic
+corpus synchronization, and no production deployment guarantees. Image versions
+and direct runtime dependencies are pinned; transitive dependencies are not a
+complete lockfile. Linux CPU results/timings are not asserted to reproduce the
+frozen native evaluation. The default host connectivity targets Docker Desktop
+on macOS; other Docker installations may require a different host-service URL.

@@ -43,7 +43,7 @@ def _argument_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--index",
         action="store_true",
-        help="Embed chunks and upsert them into local Qdrant",
+        help="Embed chunks and upsert them into the configured Qdrant instance",
     )
     parser.add_argument(
         "--reset-index",

@@ -135,6 +135,11 @@ class TechRAGService:
                     f"Qdrant contains {indexed_points} points but the corpus has "
                     f"{len(chunks)} chunks; rebuild the index"
                 )
+            if vector_store.chunk_ids() != frozenset(chunks):
+                raise ValueError(
+                    "Qdrant chunk IDs do not match the mounted corpus; rebuild "
+                    "the index from the same runtime path"
+                )
 
             dense = DenseRetriever(SentenceTransformerEmbedder(), vector_store)
             bm25 = BM25Retriever(list(chunks.values()))
