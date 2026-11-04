@@ -63,3 +63,11 @@ Each decision should eventually answer:
 - Generated labels are parsed and validated against the supplied context after generation.
 - Structured citation provenance comes from retrieved chunk metadata, never from filenames or mappings invented by the LLM.
 - Unknown labels are reported as invalid and are never mapped to a chunk.
+
+## API/UI separation
+
+- **Choice:** FastAPI exposes the application boundary, and Streamlit communicates with it over HTTP.
+- **Boundary:** The frontend does not import retrieval or generation internals.
+- **Reason:** This keeps presentation separate from the validated pipeline and makes a future deployment boundary explicit.
+- **Trade-off:** Local use requires two application processes in addition to MLX-LM when generating answers.
+- **Scope:** This is a local demonstration architecture, not a production deployment.

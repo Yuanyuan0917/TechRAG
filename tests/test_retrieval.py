@@ -1,5 +1,8 @@
 """Tests for the TechRAG dense retrieval baseline."""
 
+import os
+import subprocess
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -93,6 +96,73 @@ def test_search_is_ranked_and_payload_survives_round_trip(tmp_path: Path) -> Non
             "chunk_index": 0,
             "metadata": {"file_type": "markdown"},
         }
+    finally:
+        store.close()
+
+
+def test_server_url_selects_http_client_without_opening_embedded_storage(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[dict[str, object]] = []
+
+    class FakeClient:
+        def __init__(self, **kwargs: object) -> None:
+            calls.append(kwargs)
+
+        def close(self) -> None:
+            pass
+
+    monkeypatch.setattr("app.retrieval.vector_store.QdrantClient", FakeClient)
+    store = QdrantVectorStore(path=tmp_path / "unused", url="http://qdrant:6333")
+    store.close()
+
+    assert calls == [{"url": "http://qdrant:6333", "timeout": 10.0}]
+    assert not (tmp_path / "unused").exists()
+
+
+def test_explicit_local_path_overrides_configured_server_url(tmp_path: Path) -> None:
+    # Import in a fresh process so QDRANT_URL is set before configuration loads.
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            """
+from pathlib import Path
+import sys
+from unittest.mock import patch
+from app.retrieval.vector_store import QdrantVectorStore
+
+with patch('app.retrieval.vector_store.QdrantClient') as client:
+    store = QdrantVectorStore(path=Path(sys.argv[1]))
+    assert client.call_args.kwargs == {'path': sys.argv[1]}, client.call_args
+    store.close()
+    client.reset_mock()
+    store = QdrantVectorStore()
+    assert client.call_args.kwargs == {
+        'url': 'http://configured.invalid:6333', 'timeout': 10.0,
+    }, client.call_args
+    store.close()
+""",
+            str(tmp_path / "local"),
+        ],
+        env={**os.environ, "QDRANT_URL": "http://configured.invalid:6333"},
+        capture_output=True,
+        text=True,
+        timeout=20,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+
+
+def test_chunk_ids_reads_multiple_pages(tmp_path: Path) -> None:
+    store = _store(tmp_path / "qdrant")
+    chunks = [_chunk(f"chunk_{index}", "context", index) for index in range(260)]
+    try:
+        store.upsert(chunks, [[1.0, 0.0]] * len(chunks))
+
+        assert store.chunk_ids() == frozenset(chunk.id for chunk in chunks)
     finally:
         store.close()
 

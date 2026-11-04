@@ -10,6 +10,7 @@ import pytest
 from app.generation.citations import parse_citation_labels
 from app.generation.llm_client import (
     LLMConfigurationError,
+    LLMRequestError,
     OpenAICompatibleLLMClient,
     remove_trailing_special_tokens,
 )
@@ -207,6 +208,24 @@ def test_llm_client_sends_chat_request_and_returns_text(
         "temperature": 0.0,
     }
     assert captured["timeout"] == 12.0
+
+
+def test_llm_client_normalizes_transport_errors(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def unavailable(*_: object, **__: object) -> object:
+        raise OSError("connection unavailable")
+
+    monkeypatch.setattr("app.generation.llm_client.load_dotenv", lambda: False)
+    monkeypatch.setattr("urllib.request.urlopen", unavailable)
+    client = OpenAICompatibleLLMClient(
+        api_key="test-key",
+        base_url="http://127.0.0.1:8080/v1",
+        model="test-model",
+    )
+
+    with pytest.raises(LLMRequestError, match="connection unavailable"):
+        client.generate([{"role": "user", "content": "Question"}])
 
 
 @pytest.mark.parametrize(

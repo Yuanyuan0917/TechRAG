@@ -100,6 +100,8 @@ class OpenAICompatibleLLMClient:
             raise LLMRequestError(f"LLM request failed: {error.reason}") from error
         except TimeoutError as error:
             raise LLMRequestError("LLM request timed out") from error
+        except OSError as error:
+            raise LLMRequestError(f"LLM request failed: {error}") from error
         except (UnicodeDecodeError, json.JSONDecodeError) as error:
             raise LLMRequestError("LLM response was not valid JSON") from error
 

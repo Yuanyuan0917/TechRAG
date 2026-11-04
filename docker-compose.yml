@@ -1,0 +1,71 @@
+name: techrag
+
+services:
+  qdrant:
+    image: qdrant/qdrant:v1.16.1
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          bash -ec 'exec 3<>/dev/tcp/127.0.0.1/6333;
+          printf "GET /readyz HTTP/1.0\r\n\r\n" >&3;
+          IFS= read -r status <&3;
+          [[ "$$status" == *" 200 "* ]]'
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 10s
+
+  api:
+    build:
+      context: .
+      target: api
+    environment:
+      QDRANT_URL: http://qdrant:6333
+      LLM_BASE_URL: ${TECHRAG_DOCKER_LLM_BASE_URL:-http://host.docker.internal:8080/v1}
+      LLM_MODEL: ${LLM_MODEL:-Qwen/Qwen3-8B-MLX-4bit}
+      LLM_API_KEY: ${LLM_API_KEY:-local-mlx}
+    volumes:
+      - type: bind
+        source: ./data/raw
+        target: /app/data/raw
+        read_only: true
+        bind:
+          create_host_path: false
+      - huggingface_cache:/home/techrag/.cache/huggingface
+    ports:
+      - "127.0.0.1:${TECHRAG_API_PORT:-8000}:8000"
+    depends_on:
+      qdrant:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3).close()"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    stop_grace_period: 90s
+
+  frontend:
+    build:
+      context: .
+      target: frontend
+    environment:
+      TECHRAG_API_URL: http://api:8000
+    ports:
+      - "127.0.0.1:${TECHRAG_UI_PORT:-8501}:8501"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8501/_stcore/health', timeout=3).close()"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  qdrant_storage:
+  huggingface_cache:
